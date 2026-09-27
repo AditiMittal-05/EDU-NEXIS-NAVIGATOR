@@ -8,7 +8,7 @@ An intelligent, multi-agent decision-support platform designed to eliminate stud
 
 | Layer / Service | Technology | Key Responsibilities |
 | :--- | :--- | :--- |
-| **Frontend UI** | React.js, Vite, Tailwind CSS, JavaScript | Interactive student dashboard, profile intake forms, roadmap visualization, and domain explorers. |
+| **Frontend UI** | React.js, Vite, Tailwind CSS, Vanilla JavaScript | Interactive student dashboard, profile intake forms, roadmap visualization, and domain explorers. |
 | **Core Backend & Gateway** | Java Spring Boot, Spring Security, JWT | Authentication/authorization, API Gateway, primary database transactions, payment gateway integration. |
 | **AI & Recommendation Engine** | Python, FastAPI, Pydantic | REST APIs for NLP skill extraction, hybrid matching, constraint filtering, and multi-agent coordination. |
 | **AI / NLP & Agents** | spaCy, Sentence Transformers, LangChain / LangGraph, scikit-learn | Profile text parsing, semantic opportunity retrieval, skill-gap analysis, and explainable roadmap generation. |
