@@ -5,6 +5,7 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -41,7 +42,10 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(authToken);
             return true;
-        } catch (JwtException e) {
+        } catch (ExpiredJwtException e) {
+        	System.err.println("JWT token is expired: " + e.getMessage());
+        }
+        catch (JwtException e) {
             System.err.println("Invalid JWT token: " + e.getMessage());
         }
         return false;
