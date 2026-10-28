@@ -1,5 +1,7 @@
 package com.edu_nexis_navigator.Userservice.security; 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,13 +22,31 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final List<String> allowedOrigins;
+
+    @Autowired
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            CustomAuthenticationEntryPoint authenticationEntryPoint,
+            CustomAccessDeniedHandler accessDeniedHandler,
+            @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:5173}") List<String> allowedOrigins) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.accessDeniedHandler = accessDeniedHandler;
+        this.allowedOrigins = allowedOrigins;
     }
-	
-	@Bean
+
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            List<String> allowedOrigins) {
+        this(jwtAuthenticationFilter, null, null, allowedOrigins);
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -39,9 +59,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <--- Enables CORS configuration
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exception -> {
+                if (authenticationEntryPoint != null) {
+                    exception.authenticationEntryPoint(authenticationEntryPoint);
+                }
+                if (accessDeniedHandler != null) {
+                    exception.accessDeniedHandler(accessDeniedHandler);
+                }
+            })
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll() 
                 .requestMatchers("/user/profile").authenticated()
@@ -56,17 +84,21 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allows requests from ANY front end URL (change this to specific origins later if needed for production)
-        configuration.setAllowedOriginPatterns(List.of("*")); 
+        // Restrict allowed origins to explicitly configured trusted domains
+        configuration.setAllowedOrigins(allowedOrigins);
         
-        // Allows all common HTTP methods
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Allows common HTTP methods
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         
-        // Allows all headers (including Authorization header for JWT tokens)
-        configuration.setAllowedHeaders(List.of("*"));
+        // Allows common headers
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With", "Origin"));
         
-        // Allows credentials (cookies, authorization headers)
+        // Expose headers for frontend clients
+        configuration.setExposedHeaders(List.of("Authorization"));
+
+        // Allows credentials only for explicit trusted origins
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
