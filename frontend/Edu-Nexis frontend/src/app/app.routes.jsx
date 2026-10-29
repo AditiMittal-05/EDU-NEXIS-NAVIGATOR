@@ -1,13 +1,18 @@
 import { createBrowserRouter } from "react-router";
 import Register from "../features/auth/pages/Register";
+import NavigatorDashboard from "../features/navigator/NavigatorDashboard";
 
 export const routes = createBrowserRouter([
-    {
-        path: "/",
-        element: <h1>Welcome to Edu-Nexis</h1>
-    },
-    {
-        path: "/register",
-        element: <Register />
-    }
-])
+  {
+    path: "/",
+    element: <NavigatorDashboard />
+  },
+  {
+    path: "/navigator",
+    element: <NavigatorDashboard />
+  },
+  {
+    path: "/register",
+    element: <Register />
+  }
+]);
