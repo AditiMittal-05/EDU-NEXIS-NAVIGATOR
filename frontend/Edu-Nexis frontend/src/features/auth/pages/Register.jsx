@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useAuth } from '../hook/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
   const { handleRegister } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: '',
@@ -55,6 +57,7 @@ export default function Register() {
         password: formData.password,
       });
       setSuccessMessage('Registration successful! Redirecting to dashboard...');
+      navigate("/"); // Add this line here
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || 'Failed to complete registration. Please try again.';
       setErrorMessage(msg);
@@ -278,9 +281,8 @@ export default function Register() {
                       {passwordCriteria.map((criterion, idx) => (
                         <div
                           key={idx}
-                          className={`flex items-center gap-1.5 ${
-                            criterion.valid ? 'text-teal-700 font-medium' : 'text-slate-400'
-                          }`}
+                          className={`flex items-center gap-1.5 ${criterion.valid ? 'text-teal-700 font-medium' : 'text-slate-400'
+                            }`}
                         >
                           <svg
                             className={`w-3.5 h-3.5 shrink-0 ${criterion.valid ? 'text-teal-600' : 'text-slate-300'}`}
