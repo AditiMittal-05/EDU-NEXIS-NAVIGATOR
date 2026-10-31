@@ -4,10 +4,6 @@ import NavigatorDashboard from "../features/auth/Navigator/NavigatorDashboard";
 
 export const routes = createBrowserRouter([
   {
-    path: "/",
-    element: <NavigatorDashboard />
-  },
-  {
     path: "/navigator",
     element: <NavigatorDashboard />
   },
