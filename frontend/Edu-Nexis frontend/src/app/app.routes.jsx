@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import Register from "../features/auth/pages/Register";
-import NavigatorDashboard from "../features/navigator/NavigatorDashboard";
+import NavigatorDashboard from "../features/auth/Navigator/NavigatorDashboard";
 
 export const routes = createBrowserRouter([
   {
