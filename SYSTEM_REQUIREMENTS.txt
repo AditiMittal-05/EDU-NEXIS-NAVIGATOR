@@ -1,0 +1,53 @@
+================================================================================
+EDU-NEXIS NAVIGATOR - COMPLETE SYSTEM, RUNTIME & EXTENSION REQUIREMENTS
+================================================================================
+
+1. CORE SYSTEM RUNTIMES & TOOLS (Required on Any Laptop)
+--------------------------------------------------------------------------------
+- Operating System   : Windows 10/11 (for .bat scripts) or macOS / Linux
+- Python             : v3.11 or higher (Tested on Python 3.13) with pip & venv
+- Node.js            : v18.0.0 LTS or higher (Tested on Node v20+)
+- npm                : v9.0.0 or higher
+- Java JDK           : JDK 17 or JDK 21 (Required for Spring Boot Userservice)
+- Apache Maven       : v3.9+ (or use included ./mvnw.cmd wrapper)
+- MySQL Server       : v8.0+ (Running on localhost:3306, DB: userservice_db)
+- Git                : v2.40+
+
+2. FRONTEND DEPENDENCIES (frontend/Edu-Nexis frontend/package.json)
+--------------------------------------------------------------------------------
+- React              : ^19.x
+- React DOM          : ^19.x
+- React Router       : ^7.x
+- Vite               : ^6.x / ^7.x
+
+3. PYTHON AI MICROSERVICE DEPENDENCIES (backend/python_ai_service/requirements.txt)
+--------------------------------------------------------------------------------
+- FastAPI            : Web framework & REST API (Port 8000)
+- Uvicorn            : ASGI server
+- Pydantic           : v2.x (Data validation & percentage/CGPA normalization)
+- (Full frozen list available in backend/python_ai_service/requirements.txt)
+
+4. JAVA SPRING BOOT DEPENDENCIES (backend/spring_boot_service/Userservice/pom.xml)
+--------------------------------------------------------------------------------
+- Spring Boot        : v3.x (Port 8080)
+- Spring Security    : JWT Authentication & CORS filter
+- Spring Data JPA    : Hibernate ORM
+- MySQL Connector/J  : JDBC Driver
+
+5. RECOMMENDED VS CODE EXTENSIONS (With Extension IDs)
+--------------------------------------------------------------------------------
+- Python                         : ms-python.python
+- Pylance                        : ms-python.vscode-pylance
+- Extension Pack for Java        : vscjava.vscode-java-pack
+- Spring Boot Extension Pack     : vmware.vscode-boot-dev-pack
+- ES7+ React/Redux/React-Native  : dsznajder.es7-react-js-snippets
+- Prettier - Code Formatter      : esbenp.prettier-vscode
+- GitLens                        : eamodio.gitlens
+
+6. PORT CONFIGURATION SUMMARY
+--------------------------------------------------------------------------------
+- Frontend (React + Vite)        : http://localhost:5173
+- AI Microservice (FastAPI)      : http://127.0.0.1:8000 (Swagger: /docs)
+- User Service (Spring Boot)     : http://localhost:8080
+- Database (MySQL)               : localhost:3306
+================================================================================

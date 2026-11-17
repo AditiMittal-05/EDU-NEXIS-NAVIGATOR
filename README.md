@@ -1,54 +1,44 @@
 # EDU-NEXIS Navigator
 
-An intelligent, multi-agent decision-support platform designed to eliminate student career confusion by matching student profiles against real-world opportunities across seven key domains: Government Jobs, Government Exams, Private Sector Roles, Higher Education, Study Abroad, Scholarships, and Skill-Bridging Courses.
+**AI-Powered Career & Opportunity Discovery Platform across 7 Domains**  
+*(Government Jobs, Government Examinations, Private Sector Roles, Higher Education in India, Study Abroad, Scholarships & Grants, and Skill Bridging Courses)*
 
 ---
 
-## 🛠️ Tech Stack & Microservices Architecture
+## 1. System Prerequisites & Required Software
 
-| Layer / Service | Technology | Key Responsibilities |
+To run this project on any new laptop, install the following tools first:
+
+| Requirement | Recommended Version | Purpose |
 | :--- | :--- | :--- |
-| **Frontend UI** | React.js, Vite, Tailwind CSS, Vanilla JavaScript | Interactive student dashboard, profile intake forms, roadmap visualization, and domain explorers. |
-| **Core Backend & Gateway** | Java Spring Boot, Spring Security, JWT | Authentication/authorization, API Gateway, primary database transactions, payment gateway integration. |
-| **AI & Recommendation Engine** | Python, FastAPI, Pydantic | REST APIs for NLP skill extraction, hybrid matching, constraint filtering, and multi-agent coordination. |
-| **AI / NLP & Agents** | spaCy, Sentence Transformers, LangChain / LangGraph, scikit-learn | Profile text parsing, semantic opportunity retrieval, skill-gap analysis, and explainable roadmap generation. |
-| **Databases & Vector Storage** | MongoDB, Redis, PGVector / ChromaDB | Persistent user profile storage, token caching, and opportunity vector embeddings for RAG retrieval. |
+| **Python** | `3.11+` (with `pip` & `venv`) | Runs the FastAPI AI & Recommendation Microservice (`port 8000`) |
+| **Node.js & npm** | `Node 18+ LTS` / `npm 9+` | Runs the React + Vite Frontend (`port 5173`) |
+| **Java JDK** | `JDK 17` or `JDK 21` | Runs the Spring Boot User & Auth Microservice (`port 8080`) |
+| **Maven** | `3.9+` (or included `mvnw.cmd`) | Builds and runs the Spring Boot backend |
+| **MySQL Server** | `8.0+` | Stores user accounts and authentication data (`userservice_db`) |
+| **Git** | Latest | Version control and repository cloning |
+
+### Recommended VS Code Extensions
+- **Python** (`ms-python.python`) & **Pylance** (`ms-python.vscode-pylance`)
+- **Extension Pack for Java** (`vscjava.vscode-java-pack`)
+- **Spring Boot Extension Pack** (`vmware.vscode-boot-dev-pack`)
+- **ES7+ React/Redux/React-Native snippets** (`dsznajder.es7-react-js-snippets`)
 
 ---
 
-## 📁 Repository Structure
+## 2. Project Architecture
 
 ```text
-EDU-NEXIS-NAVIGATOR/
-├── .gitignore
-├── README.md
-├── frontend/                     # React.js web client
-└── backend/
-    ├── python_ai_service/        # FastAPI NLP, RAG & Multi-Agent Microservice (Port 8000)
-    │   ├── requirements.txt
-    │   ├── data/                 # Domain datasets & opportunity catalogs
-    │   └── app/
-    │       ├── main.py
-    │       ├── api/
-    │       ├── core/
-    │       ├── models/
-    │       └── services/
-    └── spring-boot-service/      # Java Spring Boot Core Gateway & DB (Port 8080)
-
-## 🚀 The 7 Opportunity Domains
-
-1. **Government Jobs**
-2. **Government Examinations**
-3. **Private Sector Roles**
-4. **Higher Education Programs**
-5. **Study Abroad Opportunities**
-6. **Scholarships & Grants**
-7. **Skill Bridging Courses**
-
----
-
-## 🛠️ Quickstart (Python AI Service)
-
-1. **Activate virtual environment:**
-   ```powershell
-   .\venv\Scripts\Activate.ps1
+EDU-NEXIS-NAVIGATOR-main/
+├── backend/
+│   ├── python_ai_service/       # FastAPI AI Matching, Skill-Gap & Recommendation Engine (Port 8000)
+│   │   ├── app/main.py
+│   │   ├── data/opportunities.json
+│   │   └── requirements.txt
+│   └── spring_boot_service/     # Spring Boot JWT Auth & User Profile Service (Port 8080)
+│       └── Userservice/
+├── frontend/
+│   └── Edu-Nexis frontend/      # React + Vite 7-Domain Explorer Dashboard (Port 5173)
+├── start_app.bat                # One-click Windows launcher (Starts AI Backend + React Frontend)
+├── start_backend.bat            # Starts Python FastAPI AI Microservice on Port 8000
+└── start_frontend.bat           # Starts React Vite Dev Server on Port 5173
