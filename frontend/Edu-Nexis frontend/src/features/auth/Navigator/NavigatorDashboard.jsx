@@ -63,19 +63,25 @@ export default function NavigatorDashboard() {
   };
 
   const handleDomainClick = (domainId) => {
-    if (domainId === 'govt_jobs' || domainId === 'govt_exams') {
-      navigate('/government');
+    if (domainId === 'govt_jobs') {
+      navigate('/government?tab=Job');
+    } else if (domainId === 'govt_exams') {
+      navigate('/government?tab=Exam');
     } else if (domainId === 'private_roles') {
       navigate('/private-jobs');
-    } else if (domainId === 'higher_ed' || domainId === 'study_abroad') {
-      navigate('/higher-education');
-    } else if (domainId === 'scholarships' || domainId === 'bridging_courses') {
-      navigate('/scholarships-courses');
+    } else if (domainId === 'higher_ed') {
+      navigate('/higher-education?tab=India');
+    } else if (domainId === 'study_abroad') {
+      navigate('/higher-education?tab=Abroad');
+    } else if (domainId === 'scholarships') {
+      navigate('/scholarships-courses?tab=Scholarship');
+    } else if (domainId === 'bridging_courses') {
+      navigate('/scholarships-courses?tab=Course');
     } else {
       setSelectedDomain(domainId);
     }
   };
-  
+
   const handleRunNavigator = (e) => {
     e.preventDefault();
     alert(`Profile mapped for ${profile.degree} (${profile.cgpa} CGPA). Select any opportunity domain pill to explore live pathways.`);

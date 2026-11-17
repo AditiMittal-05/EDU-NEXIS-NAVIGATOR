@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router';
 import './HigherEdExplorer.css';
 
 const HIGHER_ED_DATA = [
@@ -50,8 +50,29 @@ const HIGHER_ED_DATA = [
 ];
 
 export default function HigherEdExplorer() {
-  const [filterCategory, setFilterCategory] = useState('All');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'All';
+
+  const [filterCategory, setFilterCategory] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'India' || tabParam === 'Abroad') {
+      setFilterCategory(tabParam);
+    } else {
+      setFilterCategory('All');
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tab) => {
+    setFilterCategory(tab);
+    if (tab === 'All') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ tab });
+    }
+  };
 
   const filteredPrograms = HIGHER_ED_DATA.filter((item) => {
     const matchesCategory = filterCategory === 'All' || item.category === filterCategory;
@@ -63,10 +84,16 @@ export default function HigherEdExplorer() {
     return matchesCategory && matchesSearch;
   });
 
+  const pageTitle =
+    filterCategory === 'India'
+      ? 'Higher Education in India (M.Tech / MBA)'
+      : filterCategory === 'Abroad'
+      ? 'Study Abroad & Global MS Programs'
+      : 'Higher Education & Study Abroad';
+
   return (
     <div className="highered-page-wrapper">
       <div className="highered-container">
-        {/* Navigation Bar */}
         <nav className="sub-navbar">
           <Link to="/" className="nav-back">Back to Dashboard</Link>
           <div className="nav-links">
@@ -77,16 +104,16 @@ export default function HigherEdExplorer() {
           </div>
         </nav>
 
-        {/* Page Header */}
         <header className="page-header">
-          <div className="badge">Postgraduate & Global Track</div>
-          <h1>Higher Education & Study Abroad</h1>
+          <div className="badge">
+            {filterCategory === 'Abroad' ? 'Global Universities Track' : 'Postgraduate & Global Track'}
+          </div>
+          <h1>{pageTitle}</h1>
           <p>
             Compare domestic postgraduate entrances (GATE, CAT) and international MS programs with exact CGPA cutoffs, exam requirements, and funding details.
           </p>
         </header>
 
-        {/* Filter Controls */}
         <div className="filter-bar">
           <input
             type="text"
@@ -99,28 +126,27 @@ export default function HigherEdExplorer() {
             <button
               type="button"
               className={`toggle-btn ${filterCategory === 'All' ? 'active' : ''}`}
-              onClick={() => setFilterCategory('All')}
+              onClick={() => handleTabChange('All')}
             >
               All ({HIGHER_ED_DATA.length})
             </button>
             <button
               type="button"
               className={`toggle-btn ${filterCategory === 'India' ? 'active' : ''}`}
-              onClick={() => setFilterCategory('India')}
+              onClick={() => handleTabChange('India')}
             >
               Higher Ed (India)
             </button>
             <button
               type="button"
               className={`toggle-btn ${filterCategory === 'Abroad' ? 'active' : ''}`}
-              onClick={() => setFilterCategory('Abroad')}
+              onClick={() => handleTabChange('Abroad')}
             >
               Study Abroad
             </button>
           </div>
         </div>
 
-        {/* Cards Grid */}
         <div className="cards-grid">
           {filteredPrograms.map((item) => (
             <div key={item.id} className="highered-card">

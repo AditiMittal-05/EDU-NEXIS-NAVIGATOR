@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router';
 import './ScholarshipsCoursesExplorer.css';
 
 const SCHOLARSHIPS_COURSES_DATA = [
@@ -46,8 +46,29 @@ const SCHOLARSHIPS_COURSES_DATA = [
 ];
 
 export default function ScholarshipsCoursesExplorer() {
-  const [filterCategory, setFilterCategory] = useState('All');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'All';
+
+  const [filterCategory, setFilterCategory] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'Scholarship' || tabParam === 'Course') {
+      setFilterCategory(tabParam);
+    } else {
+      setFilterCategory('All');
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tab) => {
+    setFilterCategory(tab);
+    if (tab === 'All') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ tab });
+    }
+  };
 
   const filteredItems = SCHOLARSHIPS_COURSES_DATA.filter((item) => {
     const matchesCategory = filterCategory === 'All' || item.category === filterCategory;
@@ -59,10 +80,16 @@ export default function ScholarshipsCoursesExplorer() {
     return matchesCategory && matchesSearch;
   });
 
+  const pageTitle =
+    filterCategory === 'Scholarship'
+      ? 'Scholarships, Fellowships & Financial Grants'
+      : filterCategory === 'Course'
+      ? 'Skill Bridging Courses & Certifications'
+      : 'Scholarships, Grants & Skill Bridging Courses';
+
   return (
     <div className="sc-page-wrapper">
       <div className="sc-container">
-        {/* Navigation Bar */}
         <nav className="sub-navbar">
           <Link to="/" className="nav-back">Back to Dashboard</Link>
           <div className="nav-links">
@@ -74,16 +101,20 @@ export default function ScholarshipsCoursesExplorer() {
           </div>
         </nav>
 
-        {/* Page Header */}
         <header className="page-header">
-          <div className="badge">Financial Aid & Upskilling Track</div>
-          <h1>Scholarships, Grants & Skill Bridging Courses</h1>
+          <div className="badge">
+            {filterCategory === 'Scholarship'
+              ? 'Financial Aid & Fellowships'
+              : filterCategory === 'Course'
+              ? 'Technical Upskilling Track'
+              : 'Financial Aid & Upskilling Track'}
+          </div>
+          <h1>{pageTitle}</h1>
           <p>
             Discover merit-cum-means fellowships and targeted technical certifications designed to close skill gaps identified in your profile.
           </p>
         </header>
 
-        {/* Filter Controls */}
         <div className="filter-bar">
           <input
             type="text"
@@ -96,28 +127,27 @@ export default function ScholarshipsCoursesExplorer() {
             <button
               type="button"
               className={`toggle-btn ${filterCategory === 'All' ? 'active' : ''}`}
-              onClick={() => setFilterCategory('All')}
+              onClick={() => handleTabChange('All')}
             >
               All ({SCHOLARSHIPS_COURSES_DATA.length})
             </button>
             <button
               type="button"
               className={`toggle-btn ${filterCategory === 'Scholarship' ? 'active' : ''}`}
-              onClick={() => setFilterCategory('Scholarship')}
+              onClick={() => handleTabChange('Scholarship')}
             >
               Scholarships & Grants
             </button>
             <button
               type="button"
               className={`toggle-btn ${filterCategory === 'Course' ? 'active' : ''}`}
-              onClick={() => setFilterCategory('Course')}
+              onClick={() => handleTabChange('Course')}
             >
               Skill Bridging Courses
             </button>
           </div>
         </div>
 
-        {/* Cards Grid */}
         <div className="cards-grid">
           {filteredItems.map((item) => (
             <div key={item.id} className="sc-card">
