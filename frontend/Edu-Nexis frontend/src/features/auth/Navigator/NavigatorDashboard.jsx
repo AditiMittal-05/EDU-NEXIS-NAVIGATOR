@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router';
 import React, { useState } from 'react';
 import './NavigatorDashboard.css';
 
@@ -39,6 +40,7 @@ const INITIAL_RESULTS = [
 ];
 
 export default function NavigatorDashboard() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     degree: 'B.Tech Computer Science',
     cgpa: '8.2',
@@ -122,7 +124,12 @@ export default function NavigatorDashboard() {
                   key={domain.id} 
                   type="button"
                   className={`domain-pill ${selectedDomain === domain.id ? 'active' : ''}`}
-                  onClick={() => setSelectedDomain(domain.id)}
+                  onClick={() => {
+                    if (domain.id === 'govt_jobs' || domain.id === 'govt_exams')
+                      {navigate('/government');}
+                    else {
+                      setSelectedDomain(domain.id);}
+}}
                 >
                   <span>{domain.icon}</span> {domain.name}
                 </button>
