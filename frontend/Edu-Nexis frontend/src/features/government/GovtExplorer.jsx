@@ -1,96 +1,111 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router';
 import './GovtExplorer.css';
 
-const GOVT_DATA = [
-  {
-    id: 'isro-sc',
-    title: 'ISRO Scientist / Engineer SC',
-    type: 'Job',
-    department: 'Space Commission / DOS',
-    eligibility: 'B.E / B.Tech (First Class, min 65% or 6.84 CGPA)',
-    ageLimit: '18 - 28 Years',
-    examDate: 'December 2026',
-    applicationStatus: 'Open',
-    salary: 'Rs 56,100 - Rs 1,77,500 (Level 10)',
-    description: 'Technical entry into satellite systems and payload software design teams via ICRB screening.'
-  },
-  {
-    id: 'ssc-cgl',
-    title: 'SSC CGL (Combined Graduate Level)',
-    type: 'Exam',
-    department: 'Staff Selection Commission',
-    eligibility: 'Any Bachelors Degree from a recognized university',
-    ageLimit: '18 - 30 Years (Post specific)',
-    examDate: 'September 2026',
-    applicationStatus: 'Upcoming',
-    salary: 'Pay Level 4 to Level 8 (Rs 25,500 - Rs 1,51,100)',
-    description: 'Recruitment to Group B and Group C officers in Central Ministries, GST, Income Tax, and CBI.'
-  },
-  {
-    id: 'drdo-rac',
-    title: 'DRDO Scientist B Recruitment',
-    type: 'Job',
-    department: 'Ministry of Defence',
-    eligibility: 'B.Tech with valid GATE Score (CSE/ECE/EE/ME)',
-    ageLimit: 'Up to 28 Years',
-    examDate: 'January 2027',
-    applicationStatus: 'Open',
-    salary: 'Rs 56,100 (Level 10) + allowances',
-    description: 'Core research in embedded software, aerospace telemetry, and defense tech systems.'
-  },
-  {
-    id: 'upsc-ese',
-    title: 'UPSC Engineering Services Exam (ESE)',
-    type: 'Exam',
-    department: 'Union Public Service Commission',
-    eligibility: 'Degree in Civil, Mechanical, Electrical, or Electronics and Telecommunication',
-    ageLimit: '21 - 30 Years',
-    examDate: 'February 2027',
-    applicationStatus: 'Upcoming',
-    salary: 'Class-1 Gazetted Officer Pay',
-    description: 'Entry to Indian Railway Service of Engineers, Central Power Engineering, and Indian Naval Armament.'
-  }
-];
+const AI_API_BASE = 'http://127.0.0.1:8000';
 
 export default function GovtExplorer() {
-  const [filterType, setFilterType] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') || 'All';
 
-  const filteredItems = GOVT_DATA.filter((item) => {
+  const [filterType, setFilterType] = useState(initialTab);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [govtItems, setGovtItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'Job' || tabParam === 'Exam') {
+      setFilterType(tabParam);
+    } else {
+      setFilterType('All');
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const fetchGovtOpportunities = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${AI_API_BASE}/api/v1/ai/opportunities`);
+        const data = await res.json();
+        const filteredDomains = (data.items || []).filter(
+          (item) => item.domain_id === 'govt_jobs' || item.domain_id === 'govt_exams'
+        );
+
+        const mapped = filteredDomains.map((item) => ({
+          id: item.id,
+          title: item.title,
+          type: item.domain_id === 'govt_jobs' ? 'Job' : 'Exam',
+          organization: item.organization,
+          eligibility: item.criteria_summary,
+          ageLimit: `Up to ${item.max_age} Years`,
+          deadline: item.deadline,
+          description: item.description,
+          skills: item.required_skills || []
+        }));
+
+        setGovtItems(mapped);
+      } catch (err) {
+        console.error('Failed to fetch Govt opportunities:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGovtOpportunities();
+  }, []);
+
+  const handleTabChange = (tab) => {
+    setFilterType(tab);
+    if (tab === 'All') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ tab });
+    }
+  };
+
+  const filteredList = govtItems.filter((item) => {
     const matchesType = filterType === 'All' || item.type === filterType;
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          item.department.toLowerCase().includes(searchQuery.toLowerCase());
+    const q = searchQuery.toLowerCase();
+    const matchesSearch =
+      item.title.toLowerCase().includes(q) ||
+      item.organization.toLowerCase().includes(q) ||
+      item.description.toLowerCase().includes(q);
     return matchesType && matchesSearch;
   });
 
   return (
     <div className="govt-page-wrapper">
       <div className="govt-container">
-        {/* Navigation Bar */}
         <nav className="sub-navbar">
           <Link to="/" className="nav-back">Back to Dashboard</Link>
           <div className="nav-links">
             <Link to="/" className="nav-item">Dashboard</Link>
             <Link to="/government" className="nav-item active">Govt. Hub</Link>
-            <Link to="/register" className="nav-item">Account</Link>
+            <Link to="/private-jobs" className="nav-item">Private Roles</Link>
+            <Link to="/higher-education" className="nav-item">Higher Ed</Link>
+            <Link to="/scholarships-courses" className="nav-item">Grants & Courses</Link>
           </div>
         </nav>
 
-        {/* Page Header */}
         <header className="page-header">
-          <div className="badge">Public Sector Gateway</div>
-          <h1>Government Jobs and Examinations</h1>
+          <div className="badge">Public Sector & Civil Services Track</div>
+          <h1>
+            {filterType === 'Job'
+              ? 'Government Technical & Teaching Jobs'
+              : filterType === 'Exam'
+              ? 'National & State Government Examinations'
+              : 'Government Jobs & Competitive Examinations'}
+          </h1>
           <p>
-            Curated Central and State opportunities with explicit degree eligibility, age bounds, syllabus details, and salary grades.
+            Live verified public sector openings, scientific officer posts, teaching recruitment, and national civil service exams synced from EDU-NEXIS AI.
           </p>
         </header>
 
-        {/* Filter Controls */}
         <div className="filter-bar">
           <input
             type="text"
-            placeholder="Search by role, agency, or department (e.g. ISRO, SSC, DRDO)..."
+            placeholder="Search ISRO, KVS, UPSC, SSC, CTET, DRDO..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
@@ -99,68 +114,64 @@ export default function GovtExplorer() {
             <button
               type="button"
               className={`toggle-btn ${filterType === 'All' ? 'active' : ''}`}
-              onClick={() => setFilterType('All')}
+              onClick={() => handleTabChange('All')}
             >
-              All ({GOVT_DATA.length})
+              All ({govtItems.length})
             </button>
             <button
               type="button"
               className={`toggle-btn ${filterType === 'Job' ? 'active' : ''}`}
-              onClick={() => setFilterType('Job')}
+              onClick={() => handleTabChange('Job')}
             >
-              Jobs (Direct)
+              Govt. Jobs
             </button>
             <button
               type="button"
               className={`toggle-btn ${filterType === 'Exam' ? 'active' : ''}`}
-              onClick={() => setFilterType('Exam')}
+              onClick={() => handleTabChange('Exam')}
             >
-              Exams
+              Govt. Exams
             </button>
           </div>
         </div>
 
-        {/* Cards Grid */}
-        <div className="cards-grid">
-          {filteredItems.map((item) => (
-            <div key={item.id} className="govt-card">
-              <div className="card-top">
-                <span className={`type-tag ${item.type.toLowerCase()}`}>{item.type}</span>
-                <span className={`status-tag ${item.applicationStatus.toLowerCase()}`}>
-                  {item.applicationStatus}
-                </span>
-              </div>
-              <h3>{item.title}</h3>
-              <p className="dept-name">{item.department}</p>
+        {loading ? (
+          <p style={{ color: '#94a3b8' }}>Loading live government opportunities from FastAPI...</p>
+        ) : (
+          <div className="cards-grid">
+            {filteredList.map((item) => (
+              <div key={item.id} className="govt-card">
+                <div className="card-top">
+                  <span className={`type-tag ${item.type.toLowerCase()}`}>
+                    {item.type === 'Job' ? 'Direct Recruitment' : 'Competitive Exam'}
+                  </span>
+                  <span className="age-badge">{item.ageLimit}</span>
+                </div>
 
-              <div className="specs-list">
-                <div className="spec-item">
-                  <span className="spec-label">Eligibility:</span>
-                  <span className="spec-val">{item.eligibility}</span>
+                <h3>{item.title}</h3>
+                <p className="org-name">{item.organization}</p>
+
+                <div className="specs-list">
+                  <div className="spec-item">
+                    <span className="spec-label">Criteria:</span>
+                    <span className="spec-val">{item.eligibility}</span>
+                  </div>
+                  <div className="spec-item">
+                    <span className="spec-label">Schedule:</span>
+                    <span className="spec-val">{item.deadline}</span>
+                  </div>
                 </div>
-                <div className="spec-item">
-                  <span className="spec-label">Age Limit:</span>
-                  <span className="spec-val">{item.ageLimit}</span>
-                </div>
-                <div className="spec-item">
-                  <span className="spec-label">Timeline:</span>
-                  <span className="spec-val">{item.examDate}</span>
-                </div>
-                <div className="spec-item">
-                  <span className="spec-label">Scale:</span>
-                  <span className="spec-val">{item.salary}</span>
+
+                <p className="desc">{item.description}</p>
+
+                <div className="card-actions">
+                  <button type="button" className="primary-link-btn">View Syllabus & Cutoff</button>
+                  <button type="button" className="secondary-link-btn">Official Notification</button>
                 </div>
               </div>
-
-              <p className="desc">{item.description}</p>
-
-              <div className="card-actions">
-                <button type="button" className="primary-link-btn">Syllabus and Past Cutoffs</button>
-                <button type="button" className="secondary-link-btn">Official Portal</button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
