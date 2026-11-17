@@ -7,8 +7,23 @@
     "organization": "Indian Space Research Organisation (ICRB)",
     "min_cgpa": 6.84,
     "max_age": 28,
-    "required_skills": ["c", "c++", "data structures", "algorithms", "operating systems", "computer networks", "python"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "it", "cse"],
+    "required_skills": [
+      "c",
+      "c++",
+      "data structures",
+      "algorithms",
+      "operating systems",
+      "computer networks",
+      "python"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "it",
+      "cse"
+    ],
     "criteria_summary": "B.E./B.Tech First Class (Min 6.84 CGPA / 65%) | Age <= 28",
     "description": "Group 'A' Gazetted technical officer role in satellite software, mission control, and telemetry systems.",
     "deadline": "Application Window: Nov - Dec 2026",
@@ -22,8 +37,24 @@
     "organization": "National Informatics Centre (MeitY)",
     "min_cgpa": 6.5,
     "max_age": 30,
-    "required_skills": ["python", "java", "sql", "database", "networking", "cyber security", "git"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "mca", "it", "cse"],
+    "required_skills": [
+      "python",
+      "java",
+      "sql",
+      "database",
+      "networking",
+      "cyber security",
+      "git"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "mca",
+      "it",
+      "cse"
+    ],
     "criteria_summary": "B.Tech / M.Sc / MCA in CS/IT | Written Exam + Interview",
     "description": "Design and architect national e-Governance digital infrastructure and cloud platforms across ministries.",
     "deadline": "Expected Notification: Jan 2027",
@@ -37,8 +68,24 @@
     "organization": "Kendriya Vidyalaya Sangathan / Navodaya Vidyalaya Samiti",
     "min_cgpa": 5.0,
     "max_age": 35,
-    "required_skills": ["maths", "mathematics", "physics", "chemistry", "teaching", "pedagogy", "communication"],
-    "degree_keywords": ["b.sc", "b.ed", "maths", "mathematics", "science", "physics", "any graduate"],
+    "required_skills": [
+      "maths",
+      "mathematics",
+      "physics",
+      "chemistry",
+      "teaching",
+      "pedagogy",
+      "communication"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "b.ed",
+      "maths",
+      "mathematics",
+      "science",
+      "physics",
+      "any graduate"
+    ],
     "criteria_summary": "Bachelor's in Maths/Science (50%+) + B.Ed & CTET Paper-II",
     "description": "Central government teaching faculty positions in Kendriya Vidyalayas and Jawahar Navodaya Vidyalayas across India.",
     "deadline": "Recruitment Cycle: Dec 2026 - Jan 2027",
@@ -52,8 +99,23 @@
     "organization": "Defence Research & Development Organisation",
     "min_cgpa": 5.5,
     "max_age": 28,
-    "required_skills": ["maths", "physics", "chemistry", "computer science", "analytical reasoning", "lab instrumentation"],
-    "degree_keywords": ["b.sc", "diploma", "maths", "physics", "chemistry", "computer science", "information technology"],
+    "required_skills": [
+      "maths",
+      "physics",
+      "chemistry",
+      "computer science",
+      "analytical reasoning",
+      "lab instrumentation"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "diploma",
+      "maths",
+      "physics",
+      "chemistry",
+      "computer science",
+      "information technology"
+    ],
     "criteria_summary": "B.Sc. Degree or Engineering Diploma | Age 18-28",
     "description": "Technical & scientific support roles across DRDO defence research laboratories nationwide.",
     "deadline": "Tier-1 CBT Window: Feb 2027",
@@ -67,8 +129,22 @@
     "organization": "Union Public Service Commission",
     "min_cgpa": 5.0,
     "max_age": 32,
-    "required_skills": ["analytical reasoning", "public policy", "writing", "current affairs", "leadership"],
-    "degree_keywords": ["b.tech", "b.e", "b.sc", "b.a", "b.com", "any graduate", "engineering"],
+    "required_skills": [
+      "analytical reasoning",
+      "public policy",
+      "writing",
+      "current affairs",
+      "leadership"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "b.sc",
+      "b.a",
+      "b.com",
+      "any graduate",
+      "engineering"
+    ],
     "criteria_summary": "Any Bachelor's Degree | Age 21-32 (General)",
     "description": "Premier all-India administrative services examination for policy formulation and district governance.",
     "deadline": "Prelims Exam: May 2027",
@@ -82,8 +158,22 @@
     "organization": "Staff Selection Commission",
     "min_cgpa": 5.0,
     "max_age": 30,
-    "required_skills": ["quantitative aptitude", "maths", "reasoning", "english", "data interpretation", "excel"],
-    "degree_keywords": ["b.tech", "b.e", "b.sc", "b.a", "b.com", "any graduate"],
+    "required_skills": [
+      "quantitative aptitude",
+      "maths",
+      "reasoning",
+      "english",
+      "data interpretation",
+      "excel"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "b.sc",
+      "b.a",
+      "b.com",
+      "any graduate"
+    ],
     "criteria_summary": "Any Bachelor's Degree | Tier-1 & Tier-2 CBT",
     "description": "Central secretariat, vigilance, and ministry posts with stable career progression across India.",
     "deadline": "Tier-2 Window: Jan 2027",
@@ -97,8 +187,24 @@
     "organization": "CBSE / National Testing Agency (NTA)",
     "min_cgpa": 5.5,
     "max_age": 45,
-    "required_skills": ["teaching", "pedagogy", "maths", "physics", "chemistry", "research", "communication"],
-    "degree_keywords": ["b.sc", "m.sc", "b.ed", "b.a", "m.a", "b.com", "any graduate"],
+    "required_skills": [
+      "teaching",
+      "pedagogy",
+      "maths",
+      "physics",
+      "chemistry",
+      "research",
+      "communication"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "m.sc",
+      "b.ed",
+      "b.a",
+      "m.a",
+      "b.com",
+      "any graduate"
+    ],
     "criteria_summary": "Graduation + B.Ed (CTET) or Post-Graduation 55% (UGC-NET)",
     "description": "National eligibility certifications mandatory for Central/State government teaching and Assistant Professor posts.",
     "deadline": "Next Exam Cycle: Dec 2026 / June 2027",
@@ -112,8 +218,22 @@
     "organization": "Institute of Banking Personnel Selection / Reserve Bank of India",
     "min_cgpa": 6.0,
     "max_age": 30,
-    "required_skills": ["quantitative aptitude", "maths", "economics", "finance", "reasoning", "data interpretation"],
-    "degree_keywords": ["b.tech", "b.sc", "b.com", "b.a", "any graduate", "maths"],
+    "required_skills": [
+      "quantitative aptitude",
+      "maths",
+      "economics",
+      "finance",
+      "reasoning",
+      "data interpretation"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.sc",
+      "b.com",
+      "b.a",
+      "any graduate",
+      "maths"
+    ],
     "criteria_summary": "Graduate (60% for RBI Grade B) | Age 21-30",
     "description": "Officer-cadre banking and central monetary policy roles across public sector banks and RBI.",
     "deadline": "Notification Cycle: Q1 2027",
@@ -127,8 +247,25 @@
     "organization": "Product & Cloud Engineering Labs",
     "min_cgpa": 7.0,
     "max_age": 35,
-    "required_skills": ["python", "fastapi", "react", "javascript", "sql", "git", "rest api", "docker"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "cse", "it", "mca"],
+    "required_skills": [
+      "python",
+      "fastapi",
+      "react",
+      "javascript",
+      "sql",
+      "git",
+      "rest api",
+      "docker"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "cse",
+      "it",
+      "mca"
+    ],
     "criteria_summary": "Strong DSA + Full-Stack / API Engineering Portfolio",
     "description": "Build scalable Python/Java microservices, RAG pipelines, and responsive React dashboards.",
     "deadline": "Rolling Campus & Off-Campus Hiring",
@@ -142,8 +279,24 @@
     "organization": "Enterprise FinTech & SaaS Platforms",
     "min_cgpa": 6.8,
     "max_age": 35,
-    "required_skills": ["java", "spring boot", "react", "javascript", "mysql", "html", "css", "git"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "cse", "it"],
+    "required_skills": [
+      "java",
+      "spring boot",
+      "react",
+      "javascript",
+      "mysql",
+      "html",
+      "css",
+      "git"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "cse",
+      "it"
+    ],
     "criteria_summary": "Java Microservices + Modern Frontend Architecture",
     "description": "Develop JWT-secured REST APIs, relational schemas, and modular UI components.",
     "deadline": "Rolling Hiring",
@@ -157,8 +310,24 @@
     "organization": "Analytics & Consulting Firms (Deloitte, ZS, Mu Sigma)",
     "min_cgpa": 6.5,
     "max_age": 35,
-    "required_skills": ["maths", "statistics", "sql", "python", "excel", "data analysis", "probability"],
-    "degree_keywords": ["b.sc", "b.tech", "b.com", "maths", "statistics", "economics", "computer science"],
+    "required_skills": [
+      "maths",
+      "statistics",
+      "sql",
+      "python",
+      "excel",
+      "data analysis",
+      "probability"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "b.tech",
+      "b.com",
+      "maths",
+      "statistics",
+      "economics",
+      "computer science"
+    ],
     "criteria_summary": "Strong Quantitative, Statistical & SQL Problem Solving",
     "description": "Build statistical forecasting models, KPI dashboards, and business intelligence insights.",
     "deadline": "Rolling Hiring",
@@ -172,8 +341,24 @@
     "organization": "National EdTech & K-12 STEM Academies",
     "min_cgpa": 6.0,
     "max_age": 40,
-    "required_skills": ["teaching", "maths", "physics", "chemistry", "python", "communication", "curriculum design"],
-    "degree_keywords": ["b.sc", "m.sc", "b.tech", "b.ed", "maths", "physics", "science"],
+    "required_skills": [
+      "teaching",
+      "maths",
+      "physics",
+      "chemistry",
+      "python",
+      "communication",
+      "curriculum design"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "m.sc",
+      "b.tech",
+      "b.ed",
+      "maths",
+      "physics",
+      "science"
+    ],
     "criteria_summary": "Subject Mastery + Demo Lecture Evaluation",
     "description": "Design interactive STEM assessments and mentor high-school/competitive exam cohorts.",
     "deadline": "Rolling Hiring",
@@ -187,8 +372,23 @@
     "organization": "IIT Roorkee / IISc & Top NITs",
     "min_cgpa": 6.5,
     "max_age": 40,
-    "required_skills": ["algorithms", "data structures", "operating systems", "dbms", "computer networks", "discrete mathematics", "python"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "cse", "it"],
+    "required_skills": [
+      "algorithms",
+      "data structures",
+      "operating systems",
+      "dbms",
+      "computer networks",
+      "discrete mathematics",
+      "python"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "cse",
+      "it"
+    ],
     "criteria_summary": "Final Year B.Tech Eligible | Rs 12,400/mo AICTE Stipend",
     "description": "National postgraduate engineering entrance unlocking M.Tech specialization and Maharatna PSU recruitment.",
     "deadline": "Exam Window: Feb 2027",
@@ -202,8 +402,22 @@
     "organization": "IITs & IISc Integrated PhD Programs",
     "min_cgpa": 5.5,
     "max_age": 40,
-    "required_skills": ["maths", "physics", "chemistry", "calculus", "linear algebra", "statistics"],
-    "degree_keywords": ["b.sc", "maths", "physics", "chemistry", "statistics", "science"],
+    "required_skills": [
+      "maths",
+      "physics",
+      "chemistry",
+      "calculus",
+      "linear algebra",
+      "statistics"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "maths",
+      "physics",
+      "chemistry",
+      "statistics",
+      "science"
+    ],
     "criteria_summary": "Bachelor's Degree in Science/Maths (55%+) | National CBT",
     "description": "Gateway to M.Sc. and Joint M.Sc.-Ph.D. degrees at IITs in Mathematics, Statistics, Physics, and Chemistry.",
     "deadline": "Exam Window: Feb 2027",
@@ -217,8 +431,24 @@
     "organization": "IIM Ahmedabad, Bangalore, Calcutta & FMS",
     "min_cgpa": 6.0,
     "max_age": 40,
-    "required_skills": ["quantitative aptitude", "data interpretation", "logical reasoning", "communication", "analytics"],
-    "degree_keywords": ["b.tech", "b.e", "b.sc", "b.com", "b.a", "any graduate", "engineering", "commerce", "science"],
+    "required_skills": [
+      "quantitative aptitude",
+      "data interpretation",
+      "logical reasoning",
+      "communication",
+      "analytics"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "b.sc",
+      "b.com",
+      "b.a",
+      "any graduate",
+      "engineering",
+      "commerce",
+      "science"
+    ],
     "criteria_summary": "Min 50% / 5.5 CGPA in Bachelor's | Quant + VARC + DILR",
     "description": "Flagship management programs ideal for graduates targeting Product Management and Tech Strategy roles.",
     "deadline": "Interviews: Feb - Apr 2027",
@@ -232,8 +462,23 @@
     "organization": "Delhi University, BHU, Jamia & RIE (NCERT)",
     "min_cgpa": 5.5,
     "max_age": 40,
-    "required_skills": ["teaching", "pedagogy", "maths", "physics", "chemistry", "communication"],
-    "degree_keywords": ["b.sc", "b.a", "b.com", "m.sc", "maths", "science", "any graduate"],
+    "required_skills": [
+      "teaching",
+      "pedagogy",
+      "maths",
+      "physics",
+      "chemistry",
+      "communication"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "b.a",
+      "b.com",
+      "m.sc",
+      "maths",
+      "science",
+      "any graduate"
+    ],
     "criteria_summary": "CUET-PG Score | Mandatory Degree for TGT/PGT Govt Teaching",
     "description": "Two-year professional teacher education degree from NCERT Regional Institutes and Central Universities.",
     "deadline": "CUET-PG Window: March 2027",
@@ -247,8 +492,23 @@
     "organization": "Georgia Tech, UIUC, UCSD & US Public Research Univs",
     "min_cgpa": 8.0,
     "max_age": 40,
-    "required_skills": ["python", "machine learning", "deep learning", "research", "algorithms", "c++", "git"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "cse", "it"],
+    "required_skills": [
+      "python",
+      "machine learning",
+      "deep learning",
+      "research",
+      "algorithms",
+      "c++",
+      "git"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "cse",
+      "it"
+    ],
     "criteria_summary": "CGPA 8.0+ | TOEFL/IELTS + SOP & 3 LORs",
     "description": "Thesis and project-track Master of Science degrees with RA/TA funding opportunities in AI and Distributed Systems.",
     "deadline": "Fall 2027 Deadlines: Dec 2026 - Jan 2027",
@@ -262,8 +522,22 @@
     "organization": "TU9 German Universities (TUM, RWTH Aachen)",
     "min_cgpa": 7.8,
     "max_age": 40,
-    "required_skills": ["python", "java", "sql", "mathematics", "algorithms", "software engineering"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "cse", "it"],
+    "required_skills": [
+      "python",
+      "java",
+      "sql",
+      "mathematics",
+      "algorithms",
+      "software engineering"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "cse",
+      "it"
+    ],
     "criteria_summary": "CGPA 7.8+ | IELTS 6.5+ & APS Certificate",
     "description": "Zero-tuition English-taught European Master's degrees with strong industry R&D placements.",
     "deadline": "Winter Intake Deadline: May 2027",
@@ -277,8 +551,22 @@
     "organization": "University of Edinburgh, Warwick & ETH Zurich",
     "min_cgpa": 7.5,
     "max_age": 40,
-    "required_skills": ["maths", "statistics", "linear algebra", "python", "data analysis", "research"],
-    "degree_keywords": ["b.sc", "maths", "mathematics", "statistics", "physics", "engineering"],
+    "required_skills": [
+      "maths",
+      "statistics",
+      "linear algebra",
+      "python",
+      "data analysis",
+      "research"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "maths",
+      "mathematics",
+      "statistics",
+      "physics",
+      "engineering"
+    ],
     "criteria_summary": "First/Upper-Second Class Honours (7.5+ CGPA) + IELTS 6.5",
     "description": "One-to-two year Master's in mathematical modeling, computational science, and quantitative finance.",
     "deadline": "Rolling Intakes: Jan - April 2027",
@@ -292,8 +580,19 @@
     "organization": "Ministry of Education / National Scholarship Portal",
     "min_cgpa": 6.5,
     "max_age": 30,
-    "required_skills": ["academic merit", "engineering", "project work"],
-    "degree_keywords": ["b.tech", "b.e", "diploma", "engineering", "computer science", "information technology"],
+    "required_skills": [
+      "academic merit",
+      "engineering",
+      "project work"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "diploma",
+      "engineering",
+      "computer science",
+      "information technology"
+    ],
     "criteria_summary": "AICTE Approved Institute | Rs 50,000 / year Grant",
     "description": "Central government financial aid supporting technical degree students towards tuition, books, and hardware.",
     "deadline": "Application Closes: Dec 2026",
@@ -307,8 +606,21 @@
     "organization": "German Academic Exchange Service (DAAD)",
     "min_cgpa": 8.5,
     "max_age": 30,
-    "required_skills": ["python", "machine learning", "research", "data analysis", "c++"],
-    "degree_keywords": ["b.tech", "b.e", "computer science", "information technology", "cse", "it"],
+    "required_skills": [
+      "python",
+      "machine learning",
+      "research",
+      "data analysis",
+      "c++"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "cse",
+      "it"
+    ],
     "criteria_summary": "CGPA 8.5+ | EUR 934/month Stipend + Airfare",
     "description": "Funded summer research stay at a German public university lab under faculty mentorship.",
     "deadline": "Annual Intake Window",
@@ -322,8 +634,21 @@
     "organization": "Department of Science & Technology, Govt. of India",
     "min_cgpa": 7.0,
     "max_age": 30,
-    "required_skills": ["maths", "physics", "chemistry", "research", "academic merit"],
-    "degree_keywords": ["b.sc", "m.sc", "maths", "physics", "chemistry", "science"],
+    "required_skills": [
+      "maths",
+      "physics",
+      "chemistry",
+      "research",
+      "academic merit"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "m.sc",
+      "maths",
+      "physics",
+      "chemistry",
+      "science"
+    ],
     "criteria_summary": "Natural & Basic Sciences (B.Sc./M.Sc.) | Rs 80,000 / year",
     "description": "Merit scholarship and summer research mentorship grant for students pursuing basic and natural sciences.",
     "deadline": "NSP Portal Window: Dec 2026",
@@ -337,8 +662,21 @@
     "organization": "NPTEL (IIT Madras) / SWAYAM",
     "min_cgpa": 5.0,
     "max_age": 50,
-    "required_skills": ["python", "numpy", "pandas", "git"],
-    "degree_keywords": ["b.tech", "b.e", "b.sc", "bca", "mca", "computer science", "information technology"],
+    "required_skills": [
+      "python",
+      "numpy",
+      "pandas",
+      "git"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "b.sc",
+      "bca",
+      "mca",
+      "computer science",
+      "information technology"
+    ],
     "criteria_summary": "12 Weeks | Free Audit + IIT Proctored Certification",
     "description": "Bridges skill gaps in transformer embeddings, spaCy NLP extraction, and vector search pipelines.",
     "deadline": "Next Cohort Enrollment Open",
@@ -352,8 +690,21 @@
     "organization": "Linux Foundation / Open Source Cloud Track",
     "min_cgpa": 5.0,
     "max_age": 50,
-    "required_skills": ["javascript", "html", "css", "sql", "git"],
-    "degree_keywords": ["b.tech", "b.e", "bca", "mca", "computer science", "information technology"],
+    "required_skills": [
+      "javascript",
+      "html",
+      "css",
+      "sql",
+      "git"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "bca",
+      "mca",
+      "computer science",
+      "information technology"
+    ],
     "criteria_summary": "6 Weeks Hands-On | Verified Architecture Badge",
     "description": "Closes backend-to-frontend integration gaps covering REST APIs, CORS, JWT auth, and Docker deployment.",
     "deadline": "Self-Paced Enrollment",
@@ -367,11 +718,144 @@
     "organization": "SWAYAM / NCERT & IIT Bombay Spoken Tutorial",
     "min_cgpa": 5.0,
     "max_age": 55,
-    "required_skills": ["teaching", "communication", "maths", "science"],
-    "degree_keywords": ["b.sc", "b.a", "b.com", "b.ed", "m.sc", "any graduate"],
+    "required_skills": [
+      "teaching",
+      "communication",
+      "maths",
+      "science"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "b.a",
+      "b.com",
+      "b.ed",
+      "m.sc",
+      "any graduate"
+    ],
     "criteria_summary": "8 Weeks | Free Govt Certification for Aspiring Teachers",
     "description": "Equips science and humanities graduates with modern classroom pedagogy, Bloom's taxonomy, and ICT tools.",
     "deadline": "Enrollment Open",
     "route": "/scholarships-courses?tab=Course"
+  },
+  {
+    "id": "barc-oces-dgfs-2027",
+    "domain_id": "govt_jobs",
+    "domain_label": "GOVERNMENT JOBS",
+    "title": "BARC Scientific Officer (OCES / DGFS-2027)",
+    "organization": "Bhabha Atomic Research Centre (Dept. of Atomic Energy)",
+    "min_cgpa": 6.5,
+    "max_age": 26,
+    "required_skills": [
+      "c++",
+      "python",
+      "algorithms",
+      "operating systems",
+      "physics",
+      "maths"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "m.sc",
+      "computer science",
+      "information technology",
+      "physics",
+      "chemistry"
+    ],
+    "criteria_summary": "B.E./B.Tech or M.Sc. (60%+) | Online Exam / GATE Score + Selection Interview",
+    "description": "Group 'A' Gazetted Scientific Officer role in nuclear engineering, supercomputing, and R&D centres.",
+    "deadline": "Application Window: Jan - Feb 2027",
+    "route": "/government?tab=Job"
+  },
+  {
+    "id": "uppsc-lt-grade-pgt-2027",
+    "domain_id": "govt_jobs",
+    "domain_label": "GOVERNMENT JOBS",
+    "title": "State PSC / UPPSC LT Grade & PGT Lecturer Recruitment",
+    "organization": "Uttar Pradesh Public Service Commission / State Education Boards",
+    "min_cgpa": 5.0,
+    "max_age": 40,
+    "required_skills": [
+      "teaching",
+      "maths",
+      "physics",
+      "chemistry",
+      "pedagogy",
+      "communication"
+    ],
+    "degree_keywords": [
+      "b.sc",
+      "m.sc",
+      "b.ed",
+      "b.a",
+      "m.a",
+      "maths",
+      "science",
+      "any graduate"
+    ],
+    "criteria_summary": "Bachelor's/Master's in Subject + B.Ed. | State Written Exam",
+    "description": "Permanent Government Inter College & High School lecturer posts across state districts.",
+    "deadline": "Upcoming Notification: Q1 2027",
+    "route": "/government?tab=Job"
+  },
+  {
+    "id": "google-step-swe-intern-2027",
+    "domain_id": "private_roles",
+    "domain_label": "PRIVATE SECTOR ROLES",
+    "title": "Associate Software & AI Systems Engineer (University Grad)",
+    "organization": "Google / Microsoft / Atlassian India R&D",
+    "min_cgpa": 7.5,
+    "max_age": 30,
+    "required_skills": [
+      "python",
+      "java",
+      "c++",
+      "data structures",
+      "algorithms",
+      "git",
+      "rest api"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "computer science",
+      "information technology",
+      "cse",
+      "it",
+      "mca"
+    ],
+    "criteria_summary": "Strong DSA + Production Software Architecture | Coding + Design Rounds",
+    "description": "Build large-scale distributed cloud services, developer tooling, and AI-assisted workflows.",
+    "deadline": "University Grad Hiring Cycle: Open",
+    "route": "/private-jobs"
+  },
+  {
+    "id": "pmrf-phd-fellowship-2027",
+    "domain_id": "scholarships",
+    "domain_label": "SCHOLARSHIPS & GRANTS",
+    "title": "Prime Minister's Research Fellowship (PMRF) Direct PhD",
+    "organization": "Ministry of Education / IITs & IISc",
+    "min_cgpa": 8.0,
+    "max_age": 32,
+    "required_skills": [
+      "research",
+      "python",
+      "machine learning",
+      "maths",
+      "academic merit"
+    ],
+    "degree_keywords": [
+      "b.tech",
+      "b.e",
+      "m.sc",
+      "m.tech",
+      "computer science",
+      "information technology",
+      "science"
+    ],
+    "criteria_summary": "CGPA 8.0+ | Rs 70,000 - Rs 80,000/month Fellowship + Rs 2 Lakh/yr Research Grant",
+    "description": "Premier national doctoral fellowship for direct admission into PhD research at IITs and IISc.",
+    "deadline": "Bi-Annual Selection Cycle",
+    "route": "/scholarships-courses?tab=Scholarship"
   }
 ]

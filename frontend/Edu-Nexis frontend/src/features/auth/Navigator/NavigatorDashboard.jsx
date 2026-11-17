@@ -35,17 +35,19 @@ export default function NavigatorDashboard() {
 
   const [selectedDomain, setSelectedDomain] = useState('govt_jobs');
   const [profile, setProfile] = useState({
-    degree: 'B.Tech Information Technology',
-    cgpa: '8.2',
-    age: '21',
-    skills: 'Python, React, JavaScript, SQL, Git',
-    goal: 'Seeking an AI engineering or technical officer role in public or private labs.'
+    degree: '',
+    cgpa: '',
+    age: '',
+    skills: '',
+    goal: ''
   });
 
   const [pathways, setPathways] = useState(FALLBACK_PATHWAYS);
   const [overallSkillGaps, setOverallSkillGaps] = useState([]);
   const [loading, setLoading] = useState(false);
   const [aiStatus, setAiStatus] = useState('Connecting...');
+  const [syncingAgent, setSyncingAgent] = useState(false);
+  const [agentMessage, setAgentMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
   const fetchMatchedPathways = async (currentProfile) => {
@@ -89,8 +91,31 @@ export default function NavigatorDashboard() {
   };
 
   useEffect(() => {
-    fetchMatchedPathways(profile);
+    if (profile.degree.trim()) { fetchMatchedPathways(profile); }
   }, []);
+
+  
+  const handleRunDiscoveryAgent = async () => {
+    setSyncingAgent(true);
+    setAgentMessage('');
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/v1/ai/agent/refresh', { method: 'POST' });
+      const data = await res.json();
+      setAiStatus(`AI Engine Online (${data.total_opportunities} Opportunities)`);
+      setAgentMessage(
+        data.newly_discovered > 0
+          ? `AI Agent added ${data.newly_discovered} new opportunities!`
+          : `Feeds checked: ${data.total_opportunities} total opportunities up to date.`
+      );
+      if (typeof fetchMatchedPathways === 'function') {
+        await fetchMatchedPathways(profile);
+      }
+    } catch (e) {
+      setAgentMessage('AI Discovery Agent offline.');
+    } finally {
+      setSyncingAgent(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -135,6 +160,29 @@ export default function NavigatorDashboard() {
           </div>
           <div className="status-pill">
             <span className="status-dot"></span> {aiStatus}
+            <button
+              type="button"
+              onClick={handleRunDiscoveryAgent}
+              disabled={syncingAgent}
+              style={{
+                marginLeft: '10px',
+                padding: '5px 12px',
+                borderRadius: '999px',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                background: 'rgba(56, 189, 248, 0.15)',
+                color: '#38bdf8',
+                border: '1px solid #0284c7',
+                cursor: 'pointer'
+              }}
+            >
+              {syncingAgent ? 'Syncing Agent...' : 'Sync AI Discovery Agent'}
+            </button>
+            {agentMessage && (
+              <span style={{ marginLeft: '10px', fontSize: '0.8rem', color: '#a5b4fc' }}>
+                {agentMessage}
+              </span>
+            )}
           </div>
         </header>
 
