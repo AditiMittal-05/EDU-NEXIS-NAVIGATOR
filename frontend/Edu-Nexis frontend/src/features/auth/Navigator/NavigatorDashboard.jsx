@@ -1,162 +1,210 @@
-import { useNavigate } from 'react-router';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import './NavigatorDashboard.css';
 
 const DOMAINS = [
-  { id: 'govt_jobs', name: 'Government Jobs', icon: '🏛️', count: '14 Active' },
-  { id: 'govt_exams', name: 'Govt. Examinations', icon: '📝', count: '6 Upcoming' },
-  { id: 'private_jobs', name: 'Private Sector Roles', icon: '💼', count: '38 Listings' },
-  { id: 'higher_ed', name: 'Higher Education', icon: '🎓', count: '12 Programs' },
-  { id: 'study_abroad', name: 'Study Abroad', icon: '✈️', count: '9 Dest.' },
-  { id: 'scholarships', name: 'Scholarships & Grants', icon: '💰', count: '21 Open' },
-  { id: 'courses', name: 'Skill Bridging Courses', icon: '⚡', count: '15 Tracks' }
+  { id: 'govt_jobs', name: 'Government Jobs' },
+  { id: 'govt_exams', name: 'Govt. Examinations' },
+  { id: 'private_roles', name: 'Private Sector Roles' },
+  { id: 'higher_ed', name: 'Higher Education' },
+  { id: 'study_abroad', name: 'Study Abroad' },
+  { id: 'scholarships', name: 'Scholarships & Grants' },
+  { id: 'bridging_courses', name: 'Skill Bridging Courses' }
 ];
 
-const INITIAL_RESULTS = [
+const INITIAL_PATHWAYS = [
   {
-    domain: 'Government Jobs',
-    title: 'ISRO Scientist / Engineer ‘SC’',
-    match: 94,
-    eligibility: 'Eligible (B.Tech First Class)',
+    id: 'isro-sc',
+    domain: 'GOVERNMENT JOBS',
+    matchScore: '94% Match',
+    title: 'ISRO Scientist / Engineer SC',
+    criteria: 'Eligible (B.Tech First Class)',
     description: 'Direct entry via ICRB written test based on core engineering syllabus.',
-    deadline: 'Application closes Nov 15'
+    deadline: 'Application closes Nov 15',
+    route: '/government'
   },
   {
-    domain: 'Private Sector Roles',
+    id: 'swe-cloud',
+    domain: 'PRIVATE SECTOR ROLES',
+    matchScore: '88% Match',
     title: 'Junior Software Engineer (Cloud & AI)',
-    match: 88,
-    eligibility: 'Skills Match: 4/5',
+    criteria: 'Skills Match: 4/5',
     description: 'Requires Python, React fundamentals, and basic REST API understanding.',
-    deadline: 'Rolling Basis'
+    deadline: 'Rolling Hiring',
+    route: '/private-jobs'
   },
   {
-    domain: 'Scholarships & Grants',
-    title: 'Pre-Doctoral & Post-Grad Tech Fellowship',
-    match: 82,
-    eligibility: 'CGPA > 7.5 Required',
-    description: 'Full tuition waiver + ₹25,000 monthly stipend for deep tech projects.',
-    deadline: 'Dec 01 Deadline'
+    id: 'gate-cse',
+    domain: 'HIGHER EDUCATION',
+    matchScore: '91% Match',
+    title: 'GATE CS & IT (M.Tech / PSU Gateway)',
+    criteria: 'Final Year B.Tech Eligible',
+    description: 'National-level exam for IIT/NIT admissions and Maharatna PSU recruitment.',
+    deadline: 'Exam Window: Feb 2027',
+    route: '/higher-education'
   }
 ];
 
 export default function NavigatorDashboard() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+
+  const [selectedDomain, setSelectedDomain] = useState('govt_jobs');
+  const [profile, setProfile] = useState({
     degree: 'B.Tech Computer Science',
     cgpa: '8.2',
     age: '21',
     skills: 'Python, JavaScript, SQL, Git',
-    careerGoal: 'Seeking a balanced technical role in public or private tech labs.'
+    goal: 'Seeking a balanced technical role in public or private tech labs.'
   });
 
-  const [selectedDomain, setSelectedDomain] = useState('All');
-  const [results, setResults] = useState(INITIAL_RESULTS);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSearch = (e) => {
+  const handleDomainClick = (domainId) => {
+    if (domainId === 'govt_jobs' || domainId === 'govt_exams') {
+      navigate('/government');
+    } else if (domainId === 'private_roles') {
+      navigate('/private-jobs');
+    } else if (domainId === 'higher_ed' || domainId === 'study_abroad') {
+      navigate('/higher-education');
+    } else if (domainId === 'scholarships' || domainId === 'bridging_courses') {
+      navigate('/scholarships-courses');
+    } else {
+      setSelectedDomain(domainId);
+    }
+  };
+  
+  const handleRunNavigator = (e) => {
     e.preventDefault();
-    alert('Profile submitted! Finding optimal career matches...');
+    alert(`Profile mapped for ${profile.degree} (${profile.cgpa} CGPA). Select any opportunity domain pill to explore live pathways.`);
   };
 
   return (
-    <div className="navigator-page-wrapper">
-      <div className="app-container">
-        {/* Top Navbar */}
-        <header className="navbar">
-          <div className="brand">
-            <div className="logo-badge">EN</div>
+    <div className="navigator-wrapper">
+      <div className="navigator-container">
+        <header className="nav-header">
+          <div className="brand-box">
+            <div className="brand-logo">EN</div>
             <div>
               <h1>EDU-NEXIS Navigator</h1>
-              <p className="subtitle">AI Multi-Agent Career & Opportunity Discovery</p>
+              <p>AI Multi-Agent Career & Opportunity Discovery</p>
             </div>
           </div>
-          <div className="status-indicator">
-            <span className="dot"></span> Microservices Active
+          <div className="status-pill">
+            <span className="status-dot"></span> Microservices Active
           </div>
         </header>
 
-        <main className="main-content">
-          {/* Left Column: Intake Profile */}
-          <section className="card form-section">
+        <div className="dashboard-grid">
+          <aside className="intake-panel">
             <h2>Student Profile Intake</h2>
-            <p className="section-desc">Provide your credentials to map against all 7 opportunity streams.</p>
+            <p className="panel-subtitle">
+              Provide your credentials to map against all 7 opportunity streams.
+            </p>
 
-            <form onSubmit={handleSearch} className="form-grid">
-              <div className="input-group">
-                <label>Degree & Major</label>
-                <input type="text" name="degree" value={formData.degree} onChange={handleChange} required />
+            <form onSubmit={handleRunNavigator} className="intake-form">
+              <div className="form-group">
+                <label>DEGREE & MAJOR</label>
+                <input
+                  type="text"
+                  name="degree"
+                  value={profile.degree}
+                  onChange={handleInputChange}
+                />
               </div>
 
-              <div className="input-row">
-                <div className="input-group">
-                  <label>CGPA / Percentage</label>
-                  <input type="text" name="cgpa" value={formData.cgpa} onChange={handleChange} required />
+              <div className="form-row">
+                <div className="form-group">
+                  <label>CGPA / PERCENTAGE</label>
+                  <input
+                    type="text"
+                    name="cgpa"
+                    value={profile.cgpa}
+                    onChange={handleInputChange}
+                  />
                 </div>
-                <div className="input-group">
-                  <label>Age</label>
-                  <input type="number" name="age" value={formData.age} onChange={handleChange} required />
+                <div className="form-group">
+                  <label>AGE</label>
+                  <input
+                    type="number"
+                    name="age"
+                    value={profile.age}
+                    onChange={handleInputChange}
+                  />
                 </div>
               </div>
 
-              <div className="input-group">
-                <label>Skills (Comma-separated)</label>
-                <input type="text" name="skills" value={formData.skills} onChange={handleChange} />
+              <div className="form-group">
+                <label>SKILLS (COMMA-SEPARATED)</label>
+                <input
+                  type="text"
+                  name="skills"
+                  value={profile.skills}
+                  onChange={handleInputChange}
+                />
               </div>
 
-              <div className="input-group">
-                <label>Career Goal / Target</label>
-                <textarea name="careerGoal" rows="3" value={formData.careerGoal} onChange={handleChange} />
+              <div className="form-group">
+                <label>CAREER GOAL / TARGET</label>
+                <textarea
+                  name="goal"
+                  rows="3"
+                  value={profile.goal}
+                  onChange={handleInputChange}
+                />
               </div>
 
-              <button type="submit" className="submit-btn">Run Opportunity Navigator</button>
+              <button type="submit" className="run-btn">
+                Run Opportunity Navigator
+              </button>
             </form>
-          </section>
+          </aside>
 
-          {/* Right Column: Domains & Matches */}
-          <section className="results-section">
-            {/* Domain Badges */}
+          <main className="results-panel">
             <div className="domain-bar">
               {DOMAINS.map((domain) => (
-                <button 
-                  key={domain.id} 
+                <button
+                  key={domain.id}
                   type="button"
                   className={`domain-pill ${selectedDomain === domain.id ? 'active' : ''}`}
-                  onClick={() => {
-                    if (domain.id === 'govt_jobs' || domain.id === 'govt_exams')
-                      {navigate('/government');}
-                    else {
-                      setSelectedDomain(domain.id);}
-}}
+                  onClick={() => handleDomainClick(domain.id)}
                 >
-                  <span>{domain.icon}</span> {domain.name}
+                  {domain.name}
                 </button>
               ))}
             </div>
 
-            <h2 className="results-heading">Top Matched Pathways</h2>
+            <h2 className="section-title">Top Matched Pathways</h2>
 
-            <div className="results-grid">
-              {results.map((item, idx) => (
-                <div key={idx} className="card result-card">
-                  <div className="result-header">
-                    <span className="domain-tag">{item.domain}</span>
-                    <span className="match-tag">{item.match}% Match</span>
+            <div className="pathway-list">
+              {INITIAL_PATHWAYS.map((item) => (
+                <div key={item.id} className="pathway-card">
+                  <div className="pathway-top">
+                    <span className="pathway-domain">{item.domain}</span>
+                    <span className="pathway-match">{item.matchScore}</span>
                   </div>
                   <h3>{item.title}</h3>
-                  <p className="result-meta"><strong>Criteria:</strong> {item.eligibility}</p>
-                  <p className="result-desc">{item.description}</p>
-                  <div className="result-footer">
-                    <span className="deadline-text">{item.deadline}</span>
-                    <button type="button" className="action-btn">Explore Pathway →</button>
+                  <p className="pathway-criteria">
+                    <strong>Criteria:</strong> {item.criteria}
+                  </p>
+                  <p className="pathway-desc">{item.description}</p>
+                  <div className="pathway-footer">
+                    <span className="pathway-deadline">{item.deadline}</span>
+                    <button
+                      type="button"
+                      className="explore-link"
+                      onClick={() => navigate(item.route)}
+                    >
+                      Explore Pathway -&gt;
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
-          </section>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   );
