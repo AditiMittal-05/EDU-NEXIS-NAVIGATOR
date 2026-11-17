@@ -4,6 +4,39 @@ import './ScholarshipsCoursesExplorer.css';
 
 const AI_API_BASE = 'http://127.0.0.1:8000';
 
+const GRANTS_COURSES_DETAILS = {
+  'aicte-pragati-saksham': {
+    url: 'https://scholarships.gov.in/',
+    benefit: 'Rs 50,000 per annum lump-sum grant towards college tuition, laptop/hardware, and books (up to 4 years).',
+    checklist: 'Family Annual Income Certificate (< Rs 8 Lakh) + AICTE Institute Bonafide Certificate + Aadhaar & Bank Mandate on NSP.'
+  },
+  'daad-wise-fellowship': {
+    url: 'https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/',
+    benefit: 'EUR 934/month living stipend + EUR 1,050 airfare subsidy + German health/accident insurance for 2-3 months.',
+    checklist: 'CGPA 8.5+ Transcripts + Official Invitation Letter from a German Professor + No Objection Certificate (NOC) from Home Institute.'
+  },
+  'inspire-she-fellowship': {
+    url: 'https://online-inspire.gov.in/',
+    benefit: 'Rs 60,000 annual cash scholarship + Rs 20,000 summer research project mentorship grant (Rs 80,000/year total).',
+    checklist: 'Top 1% Class XII Board Merit / JEE-NEET Rank + Enrollment in B.Sc./Integrated M.Sc. Basic & Natural Sciences.'
+  },
+  'nptel-ml-nlp-bridge': {
+    url: 'https://swayam.gov.in/nc_details/NPTEL',
+    benefit: 'Free video lectures & weekly assignments from IIT faculty; optional Rs 1,000 proctored exam for credit-transfer certificate.',
+    checklist: 'Weekly Python/Colab coding assignments (min 40% assignment score + 40% proctored exam score for IIT certificate).'
+  },
+  'microservices-react-bridge': {
+    url: 'https://training.linuxfoundation.org/',
+    benefit: 'Hands-on architecture labs covering FastAPI async APIs, Spring Boot JWT security, React hooks, and Docker Compose.',
+    checklist: 'Build and containerize a multi-service REST application with automated health checks and CORS security.'
+  },
+  'swayam-pedagogy-ict-bridge': {
+    url: 'https://swayam.gov.in/',
+    benefit: 'Zero-cost Govt. of India teaching certification covering Bloom’s Taxonomy, digital rubrics, and AI classroom tools.',
+    checklist: 'Complete 8 weekly modules + lesson plan peer review + online assessment for NCERT/SWAYAM certificate.'
+  }
+};
+
 export default function ScholarshipsCoursesExplorer() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get('tab') || 'All';
@@ -12,6 +45,7 @@ export default function ScholarshipsCoursesExplorer() {
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeItemModal, setActiveItemModal] = useState(null);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -32,16 +66,26 @@ export default function ScholarshipsCoursesExplorer() {
           (item) => item.domain_id === 'scholarships' || item.domain_id === 'bridging_courses'
         );
 
-        const mapped = relevant.map((item) => ({
-          id: item.id,
-          title: item.title,
-          category: item.domain_id === 'scholarships' ? 'Scholarship' : 'Course',
-          provider: item.organization,
-          eligibility: item.criteria_summary,
-          timeline: item.deadline,
-          description: item.description,
-          skills: item.required_skills || []
-        }));
+        const mapped = relevant.map((item) => {
+          const extra = GRANTS_COURSES_DETAILS[item.id] || {
+            url: 'https://scholarships.gov.in/',
+            benefit: 'Financial grant or verified skill certification upon successful completion.',
+            checklist: 'Academic transcripts, valid student ID, and online portal registration.'
+          };
+          return {
+            id: item.id,
+            title: item.title,
+            category: item.domain_id === 'scholarships' ? 'Scholarship' : 'Course',
+            provider: item.organization,
+            eligibility: item.criteria_summary,
+            timeline: item.deadline,
+            description: item.description,
+            skills: item.required_skills || [],
+            portalUrl: extra.url,
+            benefitDetails: extra.benefit,
+            actionChecklist: extra.checklist
+          };
+        });
 
         setItems(mapped);
       } catch (err) {
@@ -167,13 +211,124 @@ export default function ScholarshipsCoursesExplorer() {
                 <p className="desc">{item.description}</p>
 
                 <div className="card-actions">
-                  <button type="button" className="primary-link-btn">
+                  <button
+                    type="button"
+                    className="primary-link-btn"
+                    onClick={() => setActiveItemModal(item)}
+                  >
                     {item.category === 'Scholarship' ? 'Check Grant Criteria' : 'Start Learning Track'}
                   </button>
-                  <button type="button" className="secondary-link-btn">Official Portal</button>
+                  <a
+                    href={item.portalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="secondary-link-btn"
+                    style={{ textAlign: 'center', textDecoration: 'none' }}
+                  >
+                    Official Portal
+                  </a>
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {activeItemModal && (
+          <div
+            onClick={() => setActiveItemModal(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(2, 6, 23, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+              zIndex: 1000
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: '#0f172a',
+                border: '1px solid #334155',
+                borderRadius: '16px',
+                maxWidth: '580px',
+                width: '100%',
+                padding: '28px',
+                color: '#f8fafc'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '12px' }}>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 700 }}>
+                    {activeItemModal.provider}
+                  </span>
+                  <h2 style={{ fontSize: '1.3rem', margin: '6px 0 12px' }}>{activeItemModal.title}</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveItemModal(null)}
+                  style={{
+                    background: '#1e293b',
+                    border: 'none',
+                    color: '#cbd5e1',
+                    borderRadius: '8px',
+                    padding: '6px 12px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gap: '12px', fontSize: '0.9rem', marginTop: '8px' }}>
+                <div style={{ background: '#1e293b', padding: '12px', borderRadius: '10px' }}>
+                  <strong style={{ color: '#34d399' }}>
+                    {activeItemModal.category === 'Scholarship' ? 'Financial Grant & Stipend:' : 'Course Structure & Certification:'}
+                  </strong>
+                  <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>{activeItemModal.benefitDetails}</p>
+                </div>
+                <div style={{ background: '#1e293b', padding: '12px', borderRadius: '10px' }}>
+                  <strong style={{ color: '#93c5fd' }}>
+                    {activeItemModal.category === 'Scholarship' ? 'Documents Required:' : 'Completion & Assessment Milestones:'}
+                  </strong>
+                  <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>{activeItemModal.actionChecklist}</p>
+                </div>
+                <div>
+                  <strong style={{ color: '#cbd5e1', fontSize: '0.82rem' }}>Associated Skills & Prerequisites:</strong>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+                    {activeItemModal.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        style={{
+                          fontSize: '0.78rem',
+                          padding: '4px 10px',
+                          borderRadius: '999px',
+                          backgroundColor: 'rgba(52, 211, 153, 0.14)',
+                          color: '#34d399',
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+                <a
+                  href={activeItemModal.portalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="primary-link-btn"
+                  style={{ textDecoration: 'none', padding: '10px 18px' }}
+                >
+                  Open Official Portal -&gt;
+                </a>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -4,11 +4,35 @@ import './PrivateExplorer.css';
 
 const AI_API_BASE = 'http://127.0.0.1:8000';
 
+const PRIVATE_ROLE_DETAILS = {
+  'swe-ai-cloud': {
+    url: 'https://www.linkedin.com/jobs/search/?keywords=Software%20Development%20Engineer%20AI%20Python',
+    rounds: 'Online DSA Assessment (2 Medium-Hard LeetCode) -> System Design & API Architecture -> Bar Raiser / Culture Fit.',
+    checklist: 'Build 1 end-to-end RAG/FastAPI microservice + deploy with Docker + 150+ DSA problems.'
+  },
+  'sde-fullstack-java': {
+    url: 'https://www.naukri.com/java-spring-boot-react-jobs',
+    rounds: 'Java/SQL Coding Round -> Spring Boot REST API & JWT Live Coding -> Frontend React State Review.',
+    checklist: 'Implement JWT role-based auth, MySQL indexing, and modular React components on GitHub.'
+  },
+  'data-analyst-quant': {
+    url: 'https://www.linkedin.com/jobs/search/?keywords=Quantitative%20Data%20Analyst%20SQL%20Python',
+    rounds: 'Aptitude & Probability Screening -> Live SQL Window Functions & Case Study -> Business Guesstimate Interview.',
+    checklist: 'Master SQL joins/CTEs, Python Pandas/NumPy statistical modeling, and KPI dashboard storytelling.'
+  },
+  'edtech-academic-mentor': {
+    url: 'https://www.naukri.com/stem-faculty-academic-mentor-jobs',
+    rounds: 'Subject Depth Written Test -> 15-Minute Live Demo Lecture -> Curriculum Design Discussion.',
+    checklist: 'Prepare a structured 15-min concept walkthrough with visual examples and assessment questions.'
+  }
+};
+
 export default function PrivateExplorer() {
   const [roles, setRoles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSkill, setSelectedSkill] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [activeRoleModal, setActiveRoleModal] = useState(null);
 
   useEffect(() => {
     const fetchPrivateRoles = async () => {
@@ -16,16 +40,26 @@ export default function PrivateExplorer() {
       try {
         const res = await fetch(`${AI_API_BASE}/api/v1/ai/opportunities?domain_id=private_roles`);
         const data = await res.json();
-        const mapped = (data.items || []).map((item) => ({
-          id: item.id,
-          title: item.title,
-          company: item.organization,
-          eligibility: item.criteria_summary,
-          minCgpa: `${item.min_cgpa}+ CGPA`,
-          timeline: item.deadline,
-          description: item.description,
-          skills: item.required_skills || []
-        }));
+        const mapped = (data.items || []).map((item) => {
+          const extra = PRIVATE_ROLE_DETAILS[item.id] || {
+            url: 'https://www.linkedin.com/jobs/',
+            rounds: 'Technical Screening -> Domain Problem Solving -> Managerial Round.',
+            checklist: 'Highlight verifiable GitHub repositories and core domain fundamentals.'
+          };
+          return {
+            id: item.id,
+            title: item.title,
+            company: item.organization,
+            eligibility: item.criteria_summary,
+            minCgpa: `${item.min_cgpa}+ CGPA`,
+            timeline: item.deadline,
+            description: item.description,
+            skills: item.required_skills || [],
+            portalUrl: extra.url,
+            interviewRounds: extra.rounds,
+            prepChecklist: extra.checklist
+          };
+        });
         setRoles(mapped);
       } catch (err) {
         console.error('Failed to fetch Private roles:', err);
@@ -142,11 +176,120 @@ export default function PrivateExplorer() {
                 </div>
 
                 <div className="card-actions">
-                  <button type="button" className="primary-link-btn">View Skill Checklist</button>
-                  <button type="button" className="secondary-link-btn">Apply Track</button>
+                  <button
+                    type="button"
+                    className="primary-link-btn"
+                    onClick={() => setActiveRoleModal(role)}
+                  >
+                    View Skill Checklist
+                  </button>
+                  <a
+                    href={role.portalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="secondary-link-btn"
+                    style={{ textAlign: 'center', textDecoration: 'none' }}
+                  >
+                    Apply Track
+                  </a>
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {activeRoleModal && (
+          <div
+            onClick={() => setActiveRoleModal(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(2, 6, 23, 0.8)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+              zIndex: 1000
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: '#0f172a',
+                border: '1px solid #334155',
+                borderRadius: '16px',
+                maxWidth: '580px',
+                width: '100%',
+                padding: '28px',
+                color: '#f8fafc'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', gap: '12px' }}>
+                <div>
+                  <span style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 700 }}>
+                    {activeRoleModal.company}
+                  </span>
+                  <h2 style={{ fontSize: '1.3rem', margin: '6px 0 12px' }}>{activeRoleModal.title}</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveRoleModal(null)}
+                  style={{
+                    background: '#1e293b',
+                    border: 'none',
+                    color: '#cbd5e1',
+                    borderRadius: '8px',
+                    padding: '6px 12px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gap: '12px', fontSize: '0.9rem', marginTop: '8px' }}>
+                <div style={{ background: '#1e293b', padding: '12px', borderRadius: '10px' }}>
+                  <strong style={{ color: '#a5b4fc' }}>Typical Hiring Rounds:</strong>
+                  <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>{activeRoleModal.interviewRounds}</p>
+                </div>
+                <div style={{ background: '#1e293b', padding: '12px', borderRadius: '10px' }}>
+                  <strong style={{ color: '#34d399' }}>Portfolio & Readiness Checklist:</strong>
+                  <p style={{ margin: '4px 0 0', color: '#e2e8f0' }}>{activeRoleModal.prepChecklist}</p>
+                </div>
+                <div>
+                  <strong style={{ color: '#cbd5e1', fontSize: '0.82rem' }}>Required Tech & Domain Stack:</strong>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+                    {activeRoleModal.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        style={{
+                          fontSize: '0.78rem',
+                          padding: '4px 10px',
+                          borderRadius: '999px',
+                          backgroundColor: 'rgba(99, 102, 241, 0.16)',
+                          color: '#a5b4fc',
+                          textTransform: 'capitalize'
+                        }}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+                <a
+                  href={activeRoleModal.portalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="primary-link-btn"
+                  style={{ textDecoration: 'none', padding: '10px 18px' }}
+                >
+                  Browse Open Roles -&gt;
+                </a>
+              </div>
+            </div>
           </div>
         )}
       </div>
