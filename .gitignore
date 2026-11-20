@@ -15,3 +15,6 @@ build/
 # System files
 .DS_Store
 Thumbs.db
+start_app.bat
+start_backend.bat
+start_frontend.bat
