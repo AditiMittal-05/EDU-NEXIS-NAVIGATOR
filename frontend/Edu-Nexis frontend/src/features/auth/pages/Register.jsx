@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { useAuth } from '../hook/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PYTHON_API_BASE = "http://127.0.0.1:8000";
 
 export default function Register() {
-  const { handleRegister } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -26,71 +24,77 @@ export default function Register() {
     { label: 'Upper & lowercase letters', valid: /[a-z]/.test(formData.password) && /[A-Z]/.test(formData.password) },
     { label: 'At least 1 number', valid: /\d/.test(formData.password) },
   ];
+
   const handleChange = (e) => {
-  const { name, value, type, checked } = e.target;
-  setFormData((prev) => ({
-    ...prev,
-    [name]: type === 'checkbox' ? checked : value,
-  }));
-};
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setErrorMessage('');
-  setSuccessMessage('');
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
 
-  if (!formData.username.trim() || !formData.email.trim() || !formData.password) {
-    setErrorMessage('Please fill in all required fields.');
-    return;
-  }
-
-  if (!formData.agreeTerms) {
-    setErrorMessage('Please accept the Data Governance and Privacy Terms to continue.');
-    return;
-  }
-
-  try {
-    setIsSubmitting(true);
-
-    const response = await fetch(`${PYTHON_API_BASE}/api/v1/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: formData.username.trim(),
-        email: formData.email.trim(),
-        password: formData.password,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      // FastAPI returns errors under `detail`
-      throw new Error(data.detail || data.message || "Registration failed.");
+    if (!formData.username.trim() || !formData.email.trim() || !formData.password) {
+      setErrorMessage('Please fill in all required fields.');
+      return;
     }
 
-    // Optional: Sync with your auth context/store if handleRegister updates local state
-    if (typeof handleRegister === "function") {
-      await handleRegister(data);
+    if (!formData.agreeTerms) {
+      setErrorMessage('Please accept the Data Governance and Privacy Terms to continue.');
+      return;
     }
 
-    setSuccessMessage(`${data.message} Redirecting to dashboard...`);
-    setTimeout(() => {
-      navigate("/");
-    }, 1000);
-  } catch (err) {
-    const msg =
-      err?.response?.data?.detail ||
-      err?.response?.data?.message ||
-      err?.message ||
-      'Failed to complete registration. Please try again.';
-    setErrorMessage(msg);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    try {
+      setIsSubmitting(true);
+
+      const response = await fetch(`${PYTHON_API_BASE}/api/v1/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: formData.username.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || data.message || "Registration failed.");
+      }
+
+      // Store username & JWT token returned by Python FastAPI (no duplicate :8080 call)
+      localStorage.setItem("username", data.username);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        setSuccessMessage(`${data.message} Redirecting to dashboard...`);
+        setTimeout(() => {
+          navigate("/", { replace: true });
+        }, 800);
+      } else {
+        setSuccessMessage(`${data.message} Redirecting to sign in...`);
+        setTimeout(() => {
+          navigate("/login", { replace: true });
+        }, 1000);
+      }
+    } catch (err) {
+      const msg =
+        err?.response?.data?.detail ||
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to complete registration. Please try again.';
+      setErrorMessage(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FAF9F5] text-slate-800 flex flex-col justify-between selection:bg-teal-700 selection:text-white">
@@ -148,12 +152,12 @@ export default function Register() {
           {/* Quick Sign-In Link */}
           <div className="flex items-center gap-2 text-sm">
             <span className="text-slate-500 hidden sm:inline">Already have an account?</span>
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="text-slate-900 font-semibold hover:text-teal-700 underline underline-offset-4 transition-colors"
             >
               Sign In
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -307,8 +311,7 @@ export default function Register() {
                       {passwordCriteria.map((criterion, idx) => (
                         <div
                           key={idx}
-                          className={`flex items-center gap-1.5 ${criterion.valid ? 'text-teal-700 font-medium' : 'text-slate-400'
-                            }`}
+                          className={`flex items-center gap-1.5 ${criterion.valid ? 'text-teal-700 font-medium' : 'text-slate-400'}`}
                         >
                           <svg
                             className={`w-3.5 h-3.5 shrink-0 ${criterion.valid ? 'text-teal-600' : 'text-slate-300'}`}
@@ -379,15 +382,15 @@ export default function Register() {
               <div className="text-center pt-2">
                 <p className="text-xs text-slate-500">
                   Already registered with Edu-Nexis?{' '}
-                  <a
-                    href="/login"
+                  <Link
+                    to="/login"
                     className="text-teal-700 font-semibold hover:text-teal-800 hover:underline inline-flex items-center gap-0.5"
                   >
                     Sign in to your account
                     <svg className="w-3 h-3 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                  </a>
+                  </Link>
                 </p>
               </div>
             </form>
