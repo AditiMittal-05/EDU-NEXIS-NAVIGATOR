@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './NavigatorDashboard.css';
 
 const DOMAINS = [
@@ -42,6 +42,17 @@ export default function NavigatorDashboard() {
     goal: ''
   });
 
+  // Account Profile State
+  const [userAccount, setUserAccount] = useState({
+    username: localStorage.getItem('username') || 'Guest Citizen',
+    email: '',
+    registered_at: '',
+    last_login_at: ''
+  });
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [profileError, setProfileError] = useState('');
+
   const [pathways, setPathways] = useState(FALLBACK_PATHWAYS);
   const [overallSkillGaps, setOverallSkillGaps] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,6 +60,48 @@ export default function NavigatorDashboard() {
   const [syncingAgent, setSyncingAgent] = useState(false);
   const [agentMessage, setAgentMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setProfileError('Not signed in. Please log in to view your verified profile.');
+      return;
+    }
+
+    setLoadingProfile(true);
+    setProfileError('');
+    try {
+      const res = await fetch(`${AI_API_BASE}/api/v1/auth/profile`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || 'Unable to load profile');
+      }
+
+      setUserAccount({
+        username: data.username,
+        email: data.email,
+        registered_at: data.registered_at || '',
+        last_login_at: data.last_login_at || ''
+      });
+      localStorage.setItem('username', data.username);
+    } catch (err) {
+      setProfileError(err.message || 'Failed to fetch user profile.');
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
+  const handleOpenProfile = () => {
+    setShowProfileModal(true);
+    fetchUserProfile();
+  };
 
   const fetchMatchedPathways = async (currentProfile) => {
     setLoading(true);
@@ -90,16 +143,49 @@ export default function NavigatorDashboard() {
     }
   };
 
+  // Replace useEffect (around line 146)
   useEffect(() => {
-    if (profile.degree.trim()) { fetchMatchedPathways(profile); }
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const res = await fetch(`${AI_API_BASE}/api/v1/auth/profile`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!res.ok) return;
+
+        const data = await res.json();
+        if (isMounted) {
+          setUserAccount({
+            username: data.username,
+            email: data.email,
+            registered_at: data.registered_at || '',
+            last_login_at: data.last_login_at || '',
+          });
+          localStorage.setItem('username', data.username);
+        }
+      } catch {
+        // Ignore silent background sync error on initial mount
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  
   const handleRunDiscoveryAgent = async () => {
     setSyncingAgent(true);
     setAgentMessage('');
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/v1/ai/agent/refresh', { method: 'POST' });
+      const res = await fetch(`${AI_API_BASE}/api/v1/ai/agent/refresh`, { method: 'POST' });
       const data = await res.json();
       setAiStatus(`AI Engine Online (${data.total_opportunities} Opportunities)`);
       setAgentMessage(
@@ -110,7 +196,7 @@ export default function NavigatorDashboard() {
       if (typeof fetchMatchedPathways === 'function') {
         await fetchMatchedPathways(profile);
       }
-    } catch (e) {
+    } catch{
       setAgentMessage('AI Discovery Agent offline.');
     } finally {
       setSyncingAgent(false);
@@ -147,6 +233,8 @@ export default function NavigatorDashboard() {
     fetchMatchedPathways(profile);
   };
 
+  const isLoggedIn = Boolean(localStorage.getItem('token'));
+
   return (
     <div className="navigator-wrapper">
       <div className="navigator-container">
@@ -158,33 +246,226 @@ export default function NavigatorDashboard() {
               <p>AI Multi-Agent Career & Opportunity Discovery</p>
             </div>
           </div>
-          <div className="status-pill">
-            <span className="status-dot"></span> {aiStatus}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="status-pill">
+              <span className="status-dot"></span> {aiStatus}
+              <button
+                type="button"
+                onClick={handleRunDiscoveryAgent}
+                disabled={syncingAgent}
+                style={{
+                  marginLeft: '10px',
+                  padding: '5px 12px',
+                  borderRadius: '999px',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  background: 'rgba(56, 189, 248, 0.15)',
+                  color: '#38bdf8',
+                  border: '1px solid #0284c7',
+                  cursor: 'pointer'
+                }}
+              >
+                {syncingAgent ? 'Syncing Agent...' : 'Sync AI Discovery Agent'}
+              </button>
+              {agentMessage && (
+                <span style={{ marginLeft: '10px', fontSize: '0.8rem', color: '#a5b4fc' }}>
+                  {agentMessage}
+                </span>
+              )}
+            </div>
+
+            {/* Citizen Profile Trigger Button */}
             <button
               type="button"
-              onClick={handleRunDiscoveryAgent}
-              disabled={syncingAgent}
+              onClick={handleOpenProfile}
               style={{
-                marginLeft: '10px',
-                padding: '5px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 14px',
                 borderRadius: '999px',
-                fontSize: '0.8rem',
+                background: 'rgba(20, 184, 166, 0.15)',
+                border: '1px solid rgba(20, 184, 166, 0.45)',
+                color: '#5eead4',
+                fontSize: '0.85rem',
                 fontWeight: 600,
-                background: 'rgba(56, 189, 248, 0.15)',
-                color: '#38bdf8',
-                border: '1px solid #0284c7',
                 cursor: 'pointer'
               }}
             >
-              {syncingAgent ? 'Syncing Agent...' : 'Sync AI Discovery Agent'}
-            </button>
-            {agentMessage && (
-              <span style={{ marginLeft: '10px', fontSize: '0.8rem', color: '#a5b4fc' }}>
-                {agentMessage}
+              <span
+                style={{
+                  width: '24px',
+                  height: '24px',
+                  borderRadius: '50%',
+                  background: '#0d9488',
+                  color: '#ffffff',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.75rem',
+                  fontWeight: 700
+                }}
+              >
+                {(userAccount.username || 'G').charAt(0).toUpperCase()}
               </span>
-            )}
+              <span>{isLoggedIn ? userAccount.username : 'Profile'}</span>
+            </button>
           </div>
         </header>
+
+        {/* User Profile Modal */}
+        {showProfileModal && (
+          <div
+            onClick={() => setShowProfileModal(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(2, 6, 23, 0.75)',
+              backdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '16px'
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: '100%',
+                maxWidth: '420px',
+                backgroundColor: '#0f172a',
+                border: '1px solid #1e293b',
+                borderRadius: '16px',
+                padding: '24px',
+                color: '#f8fafc',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                <div>
+                  <span style={{ fontSize: '0.7rem', letterSpacing: '0.08em', color: '#2dd4bf', fontWeight: 700 }}>
+                    VERIFIED CITIZEN REGISTRY
+                  </span>
+                  <h3 style={{ margin: '4px 0 0', fontSize: '1.2rem' }}>User Profile</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowProfileModal(false)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#94a3b8',
+                    fontSize: '1.25rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {loadingProfile ? (
+                <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Fetching profile from UserService...</p>
+              ) : profileError ? (
+                <div style={{ marginBottom: '16px' }}>
+                  <p style={{ color: '#f87171', fontSize: '0.88rem', marginBottom: '14px' }}>{profileError}</p>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/login')}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: '8px',
+                      background: '#0d9488',
+                      color: '#fff',
+                      fontWeight: 600,
+                      border: 'none',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Sign In to Account
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div
+                    style={{
+                      backgroundColor: '#1e293b',
+                      borderRadius: '12px',
+                      padding: '16px',
+                      marginBottom: '18px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '12px'
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}>USERNAME</div>
+                      <div style={{ fontSize: '0.98rem', fontWeight: 600, color: '#f1f5f9', marginTop: '2px' }}>
+                        {userAccount.username}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}>EMAIL ADDRESS</div>
+                      <div style={{ fontSize: '0.95rem', color: '#38bdf8', marginTop: '2px' }}>
+                        {userAccount.email || 'Not available'}
+                      </div>
+                    </div>
+
+                    {userAccount.last_login_at && (
+                      <div>
+                        <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}>LAST AUTHENTICATED</div>
+                        <div style={{ fontSize: '0.82rem', color: '#cbd5e1', marginTop: '2px' }}>
+                          {new Date(userAccount.last_login_at).toLocaleString()}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setShowProfileModal(false)}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        borderRadius: '8px',
+                        background: '#1e293b',
+                        color: '#e2e8f0',
+                        fontWeight: 600,
+                        border: '1px solid #334155',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowProfileModal(false);
+                        navigate('/logout');
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: '10px',
+                        borderRadius: '8px',
+                        background: 'rgba(239, 68, 68, 0.16)',
+                        color: '#f87171',
+                        fontWeight: 600,
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="dashboard-grid">
           <aside className="intake-panel">

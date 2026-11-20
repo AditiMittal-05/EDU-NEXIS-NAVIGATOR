@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useAuth } from '../hook/useAuth';
 import { useNavigate } from 'react-router-dom';
 
+const PYTHON_API_BASE = "http://127.0.0.1:8000";
+
 export default function Register() {
   const { handleRegister } = useAuth();
   const navigate = useNavigate();
@@ -24,47 +26,71 @@ export default function Register() {
     { label: 'Upper & lowercase letters', valid: /[a-z]/.test(formData.password) && /[A-Z]/.test(formData.password) },
     { label: 'At least 1 number', valid: /\d/.test(formData.password) },
   ];
-
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-    if (errorMessage) setErrorMessage('');
-  };
+  const { name, value, type, checked } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: type === 'checkbox' ? checked : value,
+  }));
+};
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-    setSuccessMessage('');
+  e.preventDefault();
+  setErrorMessage('');
+  setSuccessMessage('');
 
-    if (!formData.username.trim() || !formData.email.trim() || !formData.password) {
-      setErrorMessage('Please fill in all required fields.');
-      return;
-    }
+  if (!formData.username.trim() || !formData.email.trim() || !formData.password) {
+    setErrorMessage('Please fill in all required fields.');
+    return;
+  }
 
-    if (!formData.agreeTerms) {
-      setErrorMessage('Please accept the Data Governance and Privacy Terms to continue.');
-      return;
-    }
+  if (!formData.agreeTerms) {
+    setErrorMessage('Please accept the Data Governance and Privacy Terms to continue.');
+    return;
+  }
 
-    try {
-      setIsSubmitting(true);
-      await handleRegister({
+  try {
+    setIsSubmitting(true);
+
+    const response = await fetch(`${PYTHON_API_BASE}/api/v1/auth/register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         username: formData.username.trim(),
         email: formData.email.trim(),
         password: formData.password,
-      });
-      setSuccessMessage('Registration successful! Redirecting to dashboard...');
-      navigate("/"); // Add this line here
-    } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || 'Failed to complete registration. Please try again.';
-      setErrorMessage(msg);
-    } finally {
-      setIsSubmitting(false);
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // FastAPI returns errors under `detail`
+      throw new Error(data.detail || data.message || "Registration failed.");
     }
-  };
+
+    // Optional: Sync with your auth context/store if handleRegister updates local state
+    if (typeof handleRegister === "function") {
+      await handleRegister(data);
+    }
+
+    setSuccessMessage(`${data.message} Redirecting to dashboard...`);
+    setTimeout(() => {
+      navigate("/");
+    }, 1000);
+  } catch (err) {
+    const msg =
+      err?.response?.data?.detail ||
+      err?.response?.data?.message ||
+      err?.message ||
+      'Failed to complete registration. Please try again.';
+    setErrorMessage(msg);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#FAF9F5] text-slate-800 flex flex-col justify-between selection:bg-teal-700 selection:text-white">
