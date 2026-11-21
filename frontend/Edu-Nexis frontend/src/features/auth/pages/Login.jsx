@@ -1,43 +1,34 @@
 import { useState } from 'react';
-import { useAuth } from '../hook/useAuth';
-import { Link,useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-const PYTHON_API_BASE = "http://127.0.0.1:8000";
+const PYTHON_API_BASE = 'http://127.0.0.1:8000';
 
 export default function Login() {
   const location = useLocation();
-const redirectTo = location.state?.from?.pathname || '/';
-  const auth = useAuth();
   const navigate = useNavigate();
+  const redirectTo = location.state?.from?.pathname || '/';
 
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    rememberMe: false,
-  });
+  // Resolve lazy initializer cleanly on mount
+  const [username, setUsername] = useState(
+    () => localStorage.getItem('remembered_username') || ''
+  );
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(
+    () => Boolean(localStorage.getItem('remembered_username'))
+  );
 
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
-
   const handleSubmit = async (e) => {
-    setTimeout(() => {
-      navigate(redirectTo, { replace: true });
-    }, 800);
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
 
-    if (!formData.username.trim() || !formData.password) {
+    const cleanUsername = username.trim();
+    if (!cleanUsername || !password) {
       setErrorMessage('Please enter both your username and password.');
       return;
     }
@@ -51,8 +42,8 @@ const redirectTo = location.state?.from?.pathname || '/';
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: formData.username.trim(),
-          password: formData.password,
+          username: cleanUsername,
+          password,
         }),
       });
 
@@ -62,20 +53,19 @@ const redirectTo = location.state?.from?.pathname || '/';
         throw new Error(data.detail || data.message || 'Invalid credentials. Please try again.');
       }
 
-      // Persist JWT token and user identity
+      // Persist JWT token and user identity (no duplicate :8080 call)
       localStorage.setItem('token', data.token);
       localStorage.setItem('username', data.username);
 
-      // Sync with useAuth context if a handler is exposed
-      if (typeof auth?.handleLogin === 'function') {
-        await auth.handleLogin(data);
-      } else if (typeof auth?.setUser === 'function') {
-        auth.setUser({ username: data.username, token: data.token });
+      if (rememberMe) {
+        localStorage.setItem('remembered_username', data.username);
+      } else {
+        localStorage.removeItem('remembered_username');
       }
 
-      setSuccessMessage(`Welcome back, ${data.username}! Redirecting to dashboard...`);
+      setSuccessMessage(`Welcome back, ${data.username}! Redirecting...`);
       setTimeout(() => {
-        navigate('/');
+        navigate(redirectTo, { replace: true });
       }, 800);
     } catch (err) {
       const msg =
@@ -209,8 +199,8 @@ const redirectTo = location.state?.from?.pathname || '/';
                     name="username"
                     type="text"
                     required
-                    value={formData.username}
-                    onChange={handleChange}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter your registered username"
                     className="w-full h-11 pl-10 pr-3.5 rounded-lg border border-slate-300 bg-white text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-600/15 transition"
                   />
@@ -238,8 +228,8 @@ const redirectTo = location.state?.from?.pathname || '/';
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     required
-                    value={formData.password}
-                    onChange={handleChange}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••••••"
                     className="w-full h-11 pl-10 pr-10 rounded-lg border border-slate-300 bg-white text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-600/15 transition"
                   />
@@ -269,12 +259,12 @@ const redirectTo = location.state?.from?.pathname || '/';
                   <input
                     type="checkbox"
                     name="rememberMe"
-                    checked={formData.rememberMe}
-                    onChange={handleChange}
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-teal-600 accent-teal-700 cursor-pointer"
                   />
                   <span className="text-xs text-slate-600">
-                    Keep my authenticated session active on this device
+                    Remember my username on this device
                   </span>
                 </label>
               </div>

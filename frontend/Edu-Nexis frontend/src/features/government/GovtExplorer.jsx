@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import './GovtExplorer.css';
 
@@ -49,22 +49,13 @@ const GOVT_PORTAL_DETAILS = {
 
 export default function GovtExplorer() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'All';
+  const tabParam = searchParams.get('tab');
+  const filterType = tabParam === 'Job' || tabParam === 'Exam' ? tabParam : 'All';
 
-  const [filterType, setFilterType] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
   const [govtItems, setGovtItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeModalItem, setActiveModalItem] = useState(null);
-
-  useEffect(() => {
-    const tabParam = searchParams.get('tab');
-    if (tabParam === 'Job' || tabParam === 'Exam') {
-      setFilterType(tabParam);
-    } else {
-      setFilterType('All');
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     const fetchGovtOpportunities = async () => {
@@ -110,7 +101,6 @@ export default function GovtExplorer() {
   }, []);
 
   const handleTabChange = (tab) => {
-    setFilterType(tab);
     if (tab === 'All') {
       setSearchParams({});
     } else {

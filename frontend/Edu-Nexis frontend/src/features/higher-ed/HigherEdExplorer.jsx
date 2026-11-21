@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import './HigherEdExplorer.css';
 
@@ -44,22 +44,13 @@ const HIGHERED_DETAILS = {
 
 export default function HigherEdExplorer() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'All';
+  const tabParam = searchParams.get('tab');
+  const filterCategory = tabParam === 'India' || tabParam === 'Abroad' ? tabParam : 'All';
 
-  const [filterCategory, setFilterCategory] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeProgramModal, setActiveProgramModal] = useState(null);
-
-  useEffect(() => {
-    const tabParam = searchParams.get('tab');
-    if (tabParam === 'India' || tabParam === 'Abroad') {
-      setFilterCategory(tabParam);
-    } else {
-      setFilterCategory('All');
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     const fetchHigherEdPrograms = async () => {
@@ -105,7 +96,6 @@ export default function HigherEdExplorer() {
   }, []);
 
   const handleTabChange = (tab) => {
-    setFilterCategory(tab);
     if (tab === 'All') {
       setSearchParams({});
     } else {

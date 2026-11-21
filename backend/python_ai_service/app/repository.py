@@ -77,3 +77,18 @@ def sync_and_get_user_profile(username: str, email: str) -> dict:
         "registered_at": doc.get("registered_at"),
         "last_login_at": doc.get("last_login_at"),
     }
+
+def record_user_logout(username: str) -> None:
+    """
+    Records the latest logout timestamp for the user in MongoDB.
+    """
+    if not username:
+        return
+    users_collection.update_one(
+        {"username": username},
+        {
+            "$set": {
+                "last_logout_at": datetime.now(timezone.utc).isoformat(),
+            }
+        },
+    )

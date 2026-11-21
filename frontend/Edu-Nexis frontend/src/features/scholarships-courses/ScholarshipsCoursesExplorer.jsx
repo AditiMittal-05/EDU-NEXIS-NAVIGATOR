@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import './ScholarshipsCoursesExplorer.css';
 
@@ -39,22 +39,13 @@ const GRANTS_COURSES_DETAILS = {
 
 export default function ScholarshipsCoursesExplorer() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'All';
+  const tabParam = searchParams.get('tab');
+  const filterCategory = tabParam === 'Scholarship' || tabParam === 'Course' ? tabParam : 'All';
 
-  const [filterCategory, setFilterCategory] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState('');
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeItemModal, setActiveItemModal] = useState(null);
-
-  useEffect(() => {
-    const tabParam = searchParams.get('tab');
-    if (tabParam === 'Scholarship' || tabParam === 'Course') {
-      setFilterCategory(tabParam);
-    } else {
-      setFilterCategory('All');
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     const fetchGrantsAndCourses = async () => {
@@ -99,7 +90,6 @@ export default function ScholarshipsCoursesExplorer() {
   }, []);
 
   const handleTabChange = (tab) => {
-    setFilterCategory(tab);
     if (tab === 'All') {
       setSearchParams({});
     } else {

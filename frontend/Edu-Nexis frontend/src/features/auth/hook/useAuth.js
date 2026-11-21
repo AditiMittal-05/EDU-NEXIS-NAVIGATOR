@@ -9,5 +9,13 @@ export const useAuth = () => {
         dispatch(setUser(data.user))
     }
 
-    return {handleRegister}
+    const handleLogout = () => {
+        dispatch(setUser(null))
+    }
+
+    return {
+        handleRegister,
+        handleLogout,
+        setUser: (user) => dispatch(setUser(user))
+    }
 }

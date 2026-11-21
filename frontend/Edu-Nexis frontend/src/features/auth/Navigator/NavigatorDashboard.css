@@ -329,3 +329,107 @@
 .explore-link:hover {
   background-color: rgba(56, 189, 248, 0.12);
 }
+
+/* Sub-Navbar */
+.sub-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-card);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.nav-brand-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nav-item {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Pathway Skill Badges */
+.pathway-skills-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 16px 0;
+  padding: 10px 12px;
+  background-color: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(30, 41, 59, 0.7);
+}
+
+.skills-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.skills-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+
+.skill-tag-matched {
+  font-size: 0.74rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: rgba(16, 185, 129, 0.14);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  font-weight: 500;
+}
+
+.skill-tag-missing {
+  font-size: 0.74rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  font-weight: 500;
+}
+
+.view-hub-link {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 12px;
+  border-radius: 999px;
+  transition: all 0.2s;
+}
+
+.view-hub-link:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+}

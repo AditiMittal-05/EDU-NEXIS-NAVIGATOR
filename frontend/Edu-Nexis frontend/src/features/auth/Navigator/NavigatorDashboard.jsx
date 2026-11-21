@@ -1,20 +1,22 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './NavigatorDashboard.css';
 
 const DOMAINS = [
-  { id: 'govt_jobs', name: 'Government Jobs' },
-  { id: 'govt_exams', name: 'Govt. Examinations' },
-  { id: 'private_roles', name: 'Private Sector Roles' },
-  { id: 'higher_ed', name: 'Higher Education' },
-  { id: 'study_abroad', name: 'Study Abroad' },
-  { id: 'scholarships', name: 'Scholarships & Grants' },
-  { id: 'bridging_courses', name: 'Skill Bridging Courses' }
+  { id: 'all', name: 'All Streams' },
+  { id: 'govt_jobs', name: 'Government Jobs', route: '/government?tab=Job' },
+  { id: 'govt_exams', name: 'Govt. Examinations', route: '/government?tab=Exam' },
+  { id: 'private_roles', name: 'Private Sector Roles', route: '/private-jobs' },
+  { id: 'higher_ed', name: 'Higher Education', route: '/higher-education?tab=India' },
+  { id: 'study_abroad', name: 'Study Abroad', route: '/higher-education?tab=Abroad' },
+  { id: 'scholarships', name: 'Scholarships & Grants', route: '/scholarships-courses?tab=Scholarship' },
+  { id: 'bridging_courses', name: 'Skill Bridging Courses', route: '/scholarships-courses?tab=Course' }
 ];
 
 const FALLBACK_PATHWAYS = [
   {
     id: 'isro-sc',
+    domain_id: 'govt_jobs',
     domain: 'GOVERNMENT JOBS',
     matchScore: '94% Match',
     title: 'ISRO Scientist / Engineer SC',
@@ -33,7 +35,7 @@ const AI_API_BASE = 'http://127.0.0.1:8000';
 export default function NavigatorDashboard() {
   const navigate = useNavigate();
 
-  const [selectedDomain, setSelectedDomain] = useState('govt_jobs');
+  const [selectedDomain, setSelectedDomain] = useState('all');
   const [profile, setProfile] = useState({
     degree: '',
     cgpa: '',
@@ -61,15 +63,19 @@ export default function NavigatorDashboard() {
   const [agentMessage, setAgentMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const fetchUserProfile = async () => {
+  // Reusable user profile fetch (silent on mount, verbose in modal)
+  const fetchUserProfile = async (silent = false) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      setProfileError('Not signed in. Please log in to view your verified profile.');
+      if (!silent) setProfileError('Not signed in. Please log in to view your verified profile.');
       return;
     }
 
-    setLoadingProfile(true);
-    setProfileError('');
+    if (!silent) {
+      setLoadingProfile(true);
+      setProfileError('');
+    }
+
     try {
       const res = await fetch(`${AI_API_BASE}/api/v1/auth/profile`, {
         method: 'GET',
@@ -92,22 +98,26 @@ export default function NavigatorDashboard() {
       });
       localStorage.setItem('username', data.username);
     } catch (err) {
-      setProfileError(err.message || 'Failed to fetch user profile.');
+      if (!silent) {
+        setProfileError(err.message || 'Failed to fetch user profile.');
+      }
     } finally {
-      setLoadingProfile(false);
+      if (!silent) {
+        setLoadingProfile(false);
+      }
     }
   };
 
   const handleOpenProfile = () => {
     setShowProfileModal(true);
-    fetchUserProfile();
+    fetchUserProfile(false);
   };
 
   const fetchMatchedPathways = async (currentProfile) => {
     setLoading(true);
     setErrorMsg('');
     try {
-      const skillsArray = currentProfile.skills
+      const skillsArray = (currentProfile?.skills || '')
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean);
@@ -143,38 +153,50 @@ export default function NavigatorDashboard() {
     }
   };
 
-  // Replace useEffect (around line 146)
+  // Mount effect: Check AI service status & verify authenticated profile
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-
     let isMounted = true;
 
-    (async () => {
-      try {
-        const res = await fetch(`${AI_API_BASE}/api/v1/auth/profile`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (!res.ok) return;
-
-        const data = await res.json();
-        if (isMounted) {
-          setUserAccount({
-            username: data.username,
-            email: data.email,
-            registered_at: data.registered_at || '',
-            last_login_at: data.last_login_at || '',
-          });
-          localStorage.setItem('username', data.username);
+    fetch(`${AI_API_BASE}/`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data) {
+          setAiStatus(`AI Engine Online (${data.loaded_opportunities ?? 'Live'} Opportunities)`);
         }
-      } catch {
-        // Ignore silent background sync error on initial mount
-      }
-    })();
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAiStatus('Offline (Fallback Mode)');
+        }
+      });
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      (async () => {
+        try {
+          const res = await fetch(`${AI_API_BASE}/api/v1/auth/profile`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!res.ok) return;
+          const data = await res.json();
+          if (isMounted) {
+            setUserAccount({
+              username: data.username,
+              email: data.email,
+              registered_at: data.registered_at || '',
+              last_login_at: data.last_login_at || '',
+            });
+            localStorage.setItem('username', data.username);
+          }
+        } catch {
+          // Silent background sync
+        }
+      })();
+    }
 
     return () => {
       isMounted = false;
@@ -193,10 +215,8 @@ export default function NavigatorDashboard() {
           ? `AI Agent added ${data.newly_discovered} new opportunities!`
           : `Feeds checked: ${data.total_opportunities} total opportunities up to date.`
       );
-      if (typeof fetchMatchedPathways === 'function') {
-        await fetchMatchedPathways(profile);
-      }
-    } catch{
+      await fetchMatchedPathways(profile);
+    } catch {
       setAgentMessage('AI Discovery Agent offline.');
     } finally {
       setSyncingAgent(false);
@@ -208,36 +228,43 @@ export default function NavigatorDashboard() {
     setProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleDomainClick = (domainId) => {
-    if (domainId === 'govt_jobs') {
-      navigate('/government?tab=Job');
-    } else if (domainId === 'govt_exams') {
-      navigate('/government?tab=Exam');
-    } else if (domainId === 'private_roles') {
-      navigate('/private-jobs');
-    } else if (domainId === 'higher_ed') {
-      navigate('/higher-education?tab=India');
-    } else if (domainId === 'study_abroad') {
-      navigate('/higher-education?tab=Abroad');
-    } else if (domainId === 'scholarships') {
-      navigate('/scholarships-courses?tab=Scholarship');
-    } else if (domainId === 'bridging_courses') {
-      navigate('/scholarships-courses?tab=Course');
-    } else {
-      setSelectedDomain(domainId);
-    }
+  const handleDomainFilter = (domainId) => {
+    setSelectedDomain(domainId);
   };
 
   const handleRunNavigator = (e) => {
     e.preventDefault();
+    if (!profile.degree.trim()) {
+      setErrorMsg('Please specify your Degree & Major to compute personalized match rankings.');
+      return;
+    }
     fetchMatchedPathways(profile);
   };
 
   const isLoggedIn = Boolean(localStorage.getItem('token'));
+  const activeDomainMeta = DOMAINS.find((d) => d.id === selectedDomain);
+
+  // Filter pathways based on selected domain
+  const displayedPathways = pathways.filter((item) => {
+    if (selectedDomain === 'all') return true;
+    return item.domain_id === selectedDomain;
+  });
 
   return (
     <div className="navigator-wrapper">
       <div className="navigator-container">
+        {/* Consistent Portal Navigation Bar */}
+        <nav className="sub-navbar">
+          <span className="nav-brand-title">EDU-NEXIS Opportunity Navigator</span>
+          <div className="nav-links">
+            <Link to="/" className="nav-item active">Dashboard</Link>
+            <Link to="/government" className="nav-item">Govt. Hub</Link>
+            <Link to="/private-jobs" className="nav-item">Private Roles</Link>
+            <Link to="/higher-education" className="nav-item">Higher Ed</Link>
+            <Link to="/scholarships-courses" className="nav-item">Grants & Courses</Link>
+          </div>
+        </nav>
+
         <header className="nav-header">
           <div className="brand-box">
             <div className="brand-logo">EN</div>
@@ -480,6 +507,7 @@ export default function NavigatorDashboard() {
                 <input
                   type="text"
                   name="degree"
+                  placeholder="e.g. B.Tech Computer Science"
                   value={profile.degree}
                   onChange={handleInputChange}
                 />
@@ -492,6 +520,7 @@ export default function NavigatorDashboard() {
                     type="number"
                     step="0.01"
                     name="cgpa"
+                    placeholder="e.g. 8.5"
                     value={profile.cgpa}
                     onChange={handleInputChange}
                   />
@@ -501,6 +530,7 @@ export default function NavigatorDashboard() {
                   <input
                     type="number"
                     name="age"
+                    placeholder="e.g. 21"
                     value={profile.age}
                     onChange={handleInputChange}
                   />
@@ -512,6 +542,7 @@ export default function NavigatorDashboard() {
                 <input
                   type="text"
                   name="skills"
+                  placeholder="e.g. Python, SQL, React"
                   value={profile.skills}
                   onChange={handleInputChange}
                 />
@@ -522,6 +553,7 @@ export default function NavigatorDashboard() {
                 <textarea
                   name="goal"
                   rows="3"
+                  placeholder="e.g. Software engineer or technical research officer"
                   value={profile.goal}
                   onChange={handleInputChange}
                 />
@@ -559,68 +591,131 @@ export default function NavigatorDashboard() {
           </aside>
 
           <main className="results-panel">
+            {/* Opportunity Stream Filter Pills */}
             <div className="domain-bar">
               {DOMAINS.map((domain) => (
                 <button
                   key={domain.id}
                   type="button"
                   className={`domain-pill ${selectedDomain === domain.id ? 'active' : ''}`}
-                  onClick={() => handleDomainClick(domain.id)}
+                  onClick={() => handleDomainFilter(domain.id)}
                 >
                   {domain.name}
                 </button>
               ))}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 className="section-title" style={{ margin: 0 }}>
-                Top AI-Matched Pathways ({pathways.length})
-              </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <h2 className="section-title" style={{ margin: 0 }}>
+                  Top AI-Matched Pathways ({displayedPathways.length})
+                </h2>
+                {selectedDomain !== 'all' && activeDomainMeta?.route && (
+                  <button
+                    type="button"
+                    className="view-hub-link"
+                    onClick={() => navigate(activeDomainMeta.route)}
+                  >
+                    Open {activeDomainMeta.name} Portal &rarr;
+                  </button>
+                )}
+              </div>
               {errorMsg && (
                 <span style={{ fontSize: '0.8rem', color: '#f87171' }}>{errorMsg}</span>
               )}
             </div>
 
             <div className="pathway-list">
-              {pathways.map((item) => (
-                <div key={item.id} className="pathway-card">
-                  <div className="pathway-top">
-                    <span className="pathway-domain">{item.domain}</span>
-                    <span className="pathway-match">{item.matchScore}</span>
-                  </div>
-                  <h3>{item.title}</h3>
-                  <p className="pathway-criteria">
-                    <strong>Criteria:</strong> {item.criteria}
+              {displayedPathways.length === 0 ? (
+                <div
+                  style={{
+                    padding: '36px 20px',
+                    textAlign: 'center',
+                    color: '#94a3b8',
+                    backgroundColor: 'var(--bg-card)',
+                    borderRadius: '14px',
+                    border: '1px solid var(--border-card)'
+                  }}
+                >
+                  <p style={{ margin: '0 0 12px 0', fontSize: '0.92rem' }}>
+                    No opportunities match &quot;{activeDomainMeta?.name}&quot; in your current results.
                   </p>
-                  <p className="pathway-desc">{item.description}</p>
-
-                  {item.ai_roadmap_tip && (
-                    <p
-                      style={{
-                        fontSize: '0.8rem',
-                        color: '#38bdf8',
-                        backgroundColor: 'rgba(56, 189, 248, 0.08)',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        marginBottom: '14px'
-                      }}
-                    >
-                      <strong>AI Guidance:</strong> {item.ai_roadmap_tip}
-                    </p>
-                  )}
-
-                  <div className="pathway-footer">
-                    <span className="pathway-deadline">{item.deadline}</span>
-                    <button
-                      type="button"
-                      className="explore-link"
-                      onClick={() => navigate(item.route)}
-                    >
-                      Explore Pathway -&gt;
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="view-hub-link"
+                    onClick={() => setSelectedDomain('all')}
+                  >
+                    View All Opportunity Streams
+                  </button>
                 </div>
-              ))}
+              ) : (
+                displayedPathways.map((item) => (
+                  <div key={item.id} className="pathway-card">
+                    <div className="pathway-top">
+                      <span className="pathway-domain">{item.domain}</span>
+                      <span className="pathway-match">{item.matchScore}</span>
+                    </div>
+                    <h3>{item.title}</h3>
+                    <p className="pathway-criteria">
+                      <strong>Criteria:</strong> {item.criteria}
+                    </p>
+                    <p className="pathway-desc">{item.description}</p>
+
+                    {/* Matched & Missing Skills Badges */}
+                    {((item.matched_skills && item.matched_skills.length > 0) ||
+                      (item.missing_skills && item.missing_skills.length > 0)) && (
+                      <div className="pathway-skills-block">
+                        {item.matched_skills && item.matched_skills.length > 0 && (
+                          <div className="skills-group">
+                            <span className="skills-label">Matched:</span>
+                            {item.matched_skills.map((skill) => (
+                              <span key={skill} className="skill-tag-matched">
+                                ✓ {skill}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        {item.missing_skills && item.missing_skills.length > 0 && (
+                          <div className="skills-group">
+                            <span className="skills-label">Bridge Gap:</span>
+                            {item.missing_skills.map((gap) => (
+                              <span key={gap} className="skill-tag-missing">
+                                + {gap}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {item.ai_roadmap_tip && (
+                      <p
+                        style={{
+                          fontSize: '0.8rem',
+                          color: '#38bdf8',
+                          backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          marginBottom: '14px'
+                        }}
+                      >
+                        <strong>AI Guidance:</strong> {item.ai_roadmap_tip}
+                      </p>
+                    )}
+
+                    <div className="pathway-footer">
+                      <span className="pathway-deadline">{item.deadline}</span>
+                      <button
+                        type="button"
+                        className="explore-link"
+                        onClick={() => navigate(item.route)}
+                      >
+                        Explore Pathway -&gt;
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </main>
         </div>

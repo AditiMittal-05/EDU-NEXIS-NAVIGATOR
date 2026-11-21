@@ -1,25 +1,61 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hook/useAuth';
+
+const PYTHON_API_BASE = 'http://127.0.0.1:8000';
 
 export default function Logout() {
   const { handleLogout, setUser } = useAuth() || {};
   const navigate = useNavigate();
+  const hasCalledLogout = useRef(false);
 
-  // Read previous username lazily on initial render (avoids setState inside useEffect)
   const [signedOutUser] = useState(
     () => localStorage.getItem('username') || 'Citizen'
   );
+  const [statusMessage, setStatusMessage] = useState('Revoking session token...');
 
- useEffect(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+  useEffect(() => {
+    // Prevent duplicate calls in React 19 StrictMode
+    if (hasCalledLogout.current) return;
+    hasCalledLogout.current = true;
 
-    if (typeof handleLogout === 'function') {
-      handleLogout();
-    } else if (typeof setUser === 'function') {
-      setUser(null);
-    }
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username') || '';
+
+    (async () => {
+      try {
+        if (token) {
+          const res = await fetch(`${PYTHON_API_BASE}/api/v1/auth/logout`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'X-Username': username,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            setStatusMessage(data.message || 'Logged out successfully');
+          } else {
+            setStatusMessage('Session closed locally.');
+          }
+        } else {
+          setStatusMessage('No active token found. Session closed.');
+        }
+      } catch {
+        setStatusMessage('Logged out locally.');
+      } finally {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+
+        if (typeof handleLogout === 'function') {
+          handleLogout();
+        } else if (typeof setUser === 'function') {
+          setUser(null);
+        }
+      }
+    })();
   }, [handleLogout, setUser]);
 
   return (
@@ -88,8 +124,8 @@ export default function Logout() {
               </svg>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold tracking-wide mb-3">
-              Session Closed Safely
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/70 text-teal-800 text-xs font-semibold tracking-wide mb-3">
+              {statusMessage}
             </div>
 
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -97,7 +133,7 @@ export default function Logout() {
             </h1>
 
             <p className="text-sm text-slate-500 mt-2.5 leading-relaxed">
-              Thank you, <span className="font-semibold text-slate-700">{signedOutUser}</span>. Your JWT access token has been cleared from this browser session.
+              Thank you, <span className="font-semibold text-slate-700">{signedOutUser}</span>. Your JWT access token has been invalidated on the server and cleared from this browser.
             </p>
 
             <div className="mt-8 space-y-3">
@@ -111,10 +147,10 @@ export default function Logout() {
 
               <button
                 type="button"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/register')}
                 className="w-full h-11 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm rounded-lg border border-slate-300 transition-all cursor-pointer"
               >
-                Return to Navigator Dashboard
+                Create Another Account
               </button>
             </div>
 

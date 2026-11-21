@@ -1,3 +1,4 @@
+from email import message
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
@@ -61,3 +62,10 @@ class UserProfileResponse(BaseModel):
     email: str
     registered_at: Optional[str] = None
     last_login_at: Optional[str] = None
+
+class LogoutResponse(BaseModel):
+    message:str
+    username:Optional[str] = None
+
+    
+

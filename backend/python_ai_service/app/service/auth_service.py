@@ -1,8 +1,10 @@
+from typing import Optional
+
 import httpx
 from fastapi import HTTPException
 from app.config import SPRING_AUTH_BASE_URL
-from app.repository import save_registered_user, sync_and_get_user_profile
-from app.schemas import RegisterRequest, RegisterResponse
+from app.repository import record_user_logout, save_registered_user, sync_and_get_user_profile
+from app.schemas import LogoutResponse, RegisterRequest, RegisterResponse
 from app.repository import record_user_login, save_registered_user
 from app.schemas import LoginRequest, LoginResponse, RegisterRequest, RegisterResponse , UserProfileResponse
 
@@ -130,3 +132,40 @@ async def proxy_get_user_profile(authorization: str) -> UserProfileResponse:
         registered_at=mongo_meta.get("registered_at"),
         last_login_at=mongo_meta.get("last_login_at"),
     )
+
+async def proxy_logout_and_log(authorization :str, username: Optional[str] = None) -> LogoutResponse:
+    spring_logout_URL = f"{SPRING_AUTH_BASE_URL}/auth/logout"
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.post(
+                spring_logout_URL,
+                headers={"Authorization": authorization},
+            )
+        except httpx.RequestError as exc:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Spring Boot Auth Service unreachable: {str(exc)}",
+            )
+
+    if response.status_code not in (200, 204):
+        try:
+            err_body = response.json()
+            err_msg = err_body.get("message") or err_body.get("error") or response.text
+        except Exception:
+            err_msg = response.text or "Logout failed in Spring Boot service."
+        raise HTTPException(status_code=response.status_code, detail=err_msg)
+
+    try:
+        data = response.json()
+        message = data.get("message", "Logged out successfully")
+    except Exception:
+        message = "Logged out successfully"
+
+    try:
+        if username:
+            record_user_logout(username)
+    except Exception:
+        pass  # Do not block logout response if MongoDB audit logging hiccups
+
+    return LogoutResponse(message=message, username=username)
