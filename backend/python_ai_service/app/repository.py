@@ -127,7 +127,6 @@ def record_user_logout(username: str) -> None:
     """
     if not username:
         return
-<<<<<<< Updated upstream
     now_iso = datetime.now(timezone.utc).isoformat()
     try:
         users_collection.update_one(
@@ -140,15 +139,7 @@ def record_user_logout(username: str) -> None:
         existing["last_logout_at"] = now_iso
         users_map[username] = existing
         _save_local_users(users_map)
-=======
-    users_collection.update_one(
-        {"username": username},
-        {
-            "$set": {
-                "last_logout_at": datetime.now(timezone.utc).isoformat(),
-            }
-        },
-    )
+
 
 def upsert_opportunities_to_mongo(items: List[dict]) -> int:
     """
@@ -165,4 +156,3 @@ def upsert_opportunities_to_mongo(items: List[dict]) -> int:
         if res.upserted_id:
             inserted += 1
     return inserted
->>>>>>> Stashed changes
