@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const PYTHON_API_BASE = "http://127.0.0.1:8000";
+const PYTHON_API_BASE = import.meta.env.VITE_PYTHON_API_BASE || "http://127.0.0.1:8000";
 
 export default function Register() {
   const navigate = useNavigate();

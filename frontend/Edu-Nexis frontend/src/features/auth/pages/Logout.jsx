@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hook/useAuth';
 
-const PYTHON_API_BASE = 'http://127.0.0.1:8000';
+const PYTHON_API_BASE = import.meta.env.VITE_PYTHON_API_BASE || "http://127.0.0.1:8000";
+
 
 export default function Logout() {
   const { handleLogout, setUser } = useAuth() || {};
@@ -133,7 +134,7 @@ export default function Logout() {
             </h1>
 
             <p className="text-sm text-slate-500 mt-2.5 leading-relaxed">
-              Thank you, <span className="font-semibold text-slate-700">{signedOutUser}</span>. Your JWT access token has been invalidated on the server and cleared from this browser.
+              Thank you <span className="font-semibold text-slate-700">{signedOutUser}</span>. 
             </p>
 
             <div className="mt-8 space-y-3">
