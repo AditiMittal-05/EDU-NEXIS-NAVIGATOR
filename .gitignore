@@ -12,7 +12,6 @@ backend/python_ai_service/data/users_meta.json
 
 # Node / Frontend
 node_modules/
-<<<<<<< Updated upstream
 dist/
 build/
 
@@ -27,6 +26,3 @@ start_app.bat
 start_backend.bat
 start_frontend.bat
 backend/python_ai_service/data/users_meta.json
-=======
-dist/
->>>>>>> Stashed changes
