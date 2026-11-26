@@ -1,9 +1,16 @@
-# Python
+# Environment & Secret Files
+.env
+.env.*
+!.env.example
+*.local
+
+# Python & Runtime Files
 venv/
 __pycache__/
-*.pyc
+*.py[cod]
+backend/python_ai_service/data/users_meta.json
 
-# Node / React
+# Node / Frontend
 node_modules/
 dist/
 build/

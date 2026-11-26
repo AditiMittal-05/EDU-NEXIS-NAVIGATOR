@@ -9,6 +9,17 @@ from app.service.matching_service import evaluate_student_matches
 router = APIRouter()
 
 
+from typing import Optional
+from fastapi import APIRouter, Body, HTTPException
+from app.config import SUPPORTED_DOMAINS
+from app.repository import load_opportunities
+from app.schemas import AgentDiscoveryRequest, MatchResponse, StudentProfileRequest
+from app.service.agent_service import run_discovery_agent
+from app.service.matching_service import evaluate_student_matches
+
+router = APIRouter()
+
+
 @router.get("/")
 def health_check():
     opportunities = load_opportunities()
@@ -29,13 +40,16 @@ def get_all_opportunities(domain_id: Optional[str] = None):
 
 
 @router.post("/api/v1/ai/agent/refresh")
-def trigger_opportunity_discovery_agent():
+def trigger_opportunity_discovery_agent(
+    seed_profile: Optional[AgentDiscoveryRequest] = Body(default=None),
+):
     """
-    Autonomous AI Opportunity Ingestion Agent:
-    Scans curated verified opportunity feeds, deduplicates by ID,
-    and appends newly discovered pathways into opportunities.json.
+    Autonomous LangGraph + Tavily Opportunity Ingestion Agent:
+    Generates targeted queries from student profile, crawls live notifications,
+    extracts structured OpportunityItem records via LLM, deduplicates,
+    and saves into opportunities.json + MongoDB.
     """
-    return run_discovery_agent()
+    return run_discovery_agent(seed_profile)
 
 
 @router.post("/api/v1/ai/match", response_model=MatchResponse)

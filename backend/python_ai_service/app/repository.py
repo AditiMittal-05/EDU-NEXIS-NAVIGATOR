@@ -9,6 +9,7 @@ USERS_META_PATH = BASE_DIR / "data" / "users_meta.json"
 _mongo_client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=1500, connectTimeoutMS=1500)
 _mongo_db = _mongo_client[MONGO_DB_NAME]
 users_collection = _mongo_db["users"]
+opportunities_collection = _mongo_db["opportunities"]
 
 
 def _load_local_users() -> dict:
@@ -138,3 +139,20 @@ def record_user_logout(username: str) -> None:
         existing["last_logout_at"] = now_iso
         users_map[username] = existing
         _save_local_users(users_map)
+
+
+def upsert_opportunities_to_mongo(items: List[dict]) -> int:
+    """
+    Persists discovered opportunities into MongoDB `opportunities` collection
+    deduplicated by `id`. Returns count of newly inserted documents.
+    """
+    inserted = 0
+    for item in items:
+        res = opportunities_collection.update_one(
+            {"id": item["id"]},
+            {"$set": item},
+            upsert=True,
+        )
+        if res.upserted_id:
+            inserted += 1
+    return inserted

@@ -30,7 +30,7 @@ const FALLBACK_PATHWAYS = [
   }
 ];
 
-const AI_API_BASE = 'http://127.0.0.1:8000';
+const PYTHON_API_BASE = import.meta.env.VITE_PYTHON_API_BASE || "http://127.0.0.1:8000";
 
 export default function NavigatorDashboard() {
   const navigate = useNavigate();
@@ -77,7 +77,7 @@ export default function NavigatorDashboard() {
     }
 
     try {
-      const res = await fetch(`${AI_API_BASE}/api/v1/auth/profile`, {
+      const res = await fetch(`${PYTHON_API_BASE}/api/v1/auth/profile`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ export default function NavigatorDashboard() {
         .map((s) => s.trim())
         .filter(Boolean);
 
-      const response = await fetch(`${AI_API_BASE}/api/v1/ai/match`, {
+      const response = await fetch(`${PYTHON_API_BASE}/api/v1/ai/match`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -157,7 +157,7 @@ export default function NavigatorDashboard() {
   useEffect(() => {
     let isMounted = true;
 
-    fetch(`${AI_API_BASE}/`)
+    fetch(`${PYTHON_API_BASE}/`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (isMounted && data) {
@@ -174,7 +174,7 @@ export default function NavigatorDashboard() {
     if (token) {
       (async () => {
         try {
-          const res = await fetch(`${AI_API_BASE}/api/v1/auth/profile`, {
+          const res = await fetch(`${PYTHON_API_BASE}/api/v1/auth/profile`, {
             method: 'GET',
             headers: {
               Authorization: `Bearer ${token}`,
@@ -207,13 +207,29 @@ export default function NavigatorDashboard() {
     setSyncingAgent(true);
     setAgentMessage('');
     try {
-      const res = await fetch(`${AI_API_BASE}/api/v1/ai/agent/refresh`, { method: 'POST' });
+      const skillsArray = profile.skills
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      const res = await fetch(`${PYTHON_API_BASE}/api/v1/ai/agent/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          degree: profile.degree.trim() || 'B.Tech Computer Science / Information Technology',
+          cgpa: parseFloat(profile.cgpa) || 8.0,
+          age: parseInt(profile.age, 10) || 22,
+          skills: skillsArray.length > 0 ? skillsArray : ['Python', 'Java', 'SQL'],
+          goal: profile.goal.trim() || 'Software Engineer or Technical Officer',
+        }),
+      });
+
       const data = await res.json();
       setAiStatus(`AI Engine Online (${data.total_opportunities} Opportunities)`);
       setAgentMessage(
         data.newly_discovered > 0
-          ? `AI Agent added ${data.newly_discovered} new opportunities!`
-          : `Feeds checked: ${data.total_opportunities} total opportunities up to date.`
+          ? `AI Agent discovered ${data.newly_discovered} new opportunities!`
+          : `Feeds checked (${data.pipeline_mode}): ${data.total_opportunities} opportunities up to date.`
       );
       await fetchMatchedPathways(profile);
     } catch {
